@@ -1,11 +1,12 @@
 package models;
 
 import java.lang.reflect.Array;
+import java.util.List;
+import models.Video;
 
 import org.joda.time.DateTime;
 
 
-//import interfaces.YTPlayer;
 /** 
  * 
  * @author Cella Sum, Arudra Venkat, Dustin Overmiller, and Justin Kambic
@@ -19,7 +20,7 @@ public class User {
 	private String password;
 	private DateTime joinDate;
 	private DateTime lastLogin;
-//	private Array videoList;
+	private List<Video> videoList;
 	private boolean bAdmin;
 	
 	
@@ -31,10 +32,26 @@ public class User {
 		username = "";
 		email = "";
 		password = "";
-	//	joinDate = 0;
-	//	lastLogin = 0;
-	//	videoList.
+		joinDate = new DateTime(0, 0, 0, 0, 0);
+		lastLogin = new DateTime(0,0,0,0,0);
+		videoList = new List<Video>();
+		bAdmin = false;
 	}
+	
+	/**
+	 * Constructor to specify the different user attributes 
+	 */
+	public User(String name, String emailaddr, String pass, DateTime jDate, DateTime llogin, List<Video> vList, boolean admin)
+	{
+		username = name;
+		email = emailaddr;
+		password = pass;
+		joinDate = jDate;
+		lastLogin = llogin;
+		videoList = vList;
+		bAdmin = admin;
+	}
+	
 	/**
 	 * Get the username for the user
 	 */
@@ -86,38 +103,79 @@ public class User {
 	/**
 	 * Get the join date for the user
 	 */
-//	public DateTime getJoinDate()
-//	{
-//		return joinDate;
-//	}
+	public DateTime getJoinDate()
+	{
+		return joinDate;
+	}
 	
 	/**
 	 * Set the join date for the user
 	 */
-//	public void setJoinDate(DateTime jDate)
-//	{
-//		joinDate = jDate;
-//	}
+	public void setJoinDate(DateTime jDate)
+	{
+		joinDate = jDate;
+	}
 	
 	/**
 	 * Get the last login for the user
 	 */
-//	public DateTime getLastLogin()
-//	{
-//		return lastLogin;
-//	}
+	public DateTime getLastLogin()
+	{
+		return lastLogin;
+	}
 	
 	/**
 	 * Set the last login for the user
 	 */
-//	public void setLastLogin(DateTime llog)
-//	{
-//		lastLogin = llog;
-//	}
+	public void setLastLogin(DateTime llog)
+	{
+		lastLogin = llog;
+	}
 	
 	/**
 	 * Get the Video List for the user
 	 */
+	public List<Video> getVideoList()
+	{
+		return videoList;
+	}
 	
+	/**
+	 * Set the Video List for the user
+	 */
+	public void setVideoList(List<Video> vList)
+	{
+		videoList = vList;
+	}
+	
+	/**
+	 * Replace a video in the user list with a new video
+	 */
+	public boolean setVideo(Video Old, Video New)
+	{
+		return true;
+	}
+	
+	/**
+	 * Determine if the User has Curator or Admin rights
+	 */
+	public boolean isPrivileged()
+	{
+		// Determine this based on User name
+		// If the username is set then the person has privileged rights
+		if (username != "")
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Determine if the user is an Admin
+	 */
+	public booleain isAdmin()
+	{
+		return bAdmin;
+	}
 
 }
