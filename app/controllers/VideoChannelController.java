@@ -1,8 +1,5 @@
 package controllers;
 
-public class VideoChannelController implements YTPlayer {
+public class VideoChannelController {
 
-	Video currentVideo
-	int volume
-	YTPlayer player
 }

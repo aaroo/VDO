@@ -1,4 +1,0 @@
-vdo
-===
-
-Project VDO
