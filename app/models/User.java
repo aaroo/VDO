@@ -1,9 +1,7 @@
 package models;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import models.Video;
-
 import org.joda.time.DateTime;
 
 
@@ -25,7 +23,7 @@ public class User {
 	
 	
 	/**
-	 * Default Constructor for the User Class
+	 * Default Constructor for the User class
 	 */
 	public User()
 	{
@@ -39,7 +37,14 @@ public class User {
 	}
 	
 	/**
-	 * Constructor to specify the different user attributes 
+	 * Contructor for generating a specific user
+	 * @param name
+	 * @param emailaddr
+	 * @param pass
+	 * @param jDate
+	 * @param llogin
+	 * @param vList
+	 * @param admin
 	 */
 	public User(String name, String emailaddr, String pass, DateTime jDate, DateTime llogin, List<Video> vList, boolean admin)
 	{
