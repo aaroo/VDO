@@ -1,8 +1,10 @@
 package models;
 
-import java.util.List;
-import models.Video;
 import org.joda.time.DateTime;
+import java.util.*;
+import javax.persistence.*;
+import play.db.jpa.*;
+import play.data.validation.*;
 
 
 /** 
@@ -12,13 +14,20 @@ import org.joda.time.DateTime;
  * This defines the User Model to store all user related information
  *
  */
-public class User {
+@Entity
+public class User extends Model {
+	
+	@Required
 	private String username;
+	@Required
 	private String email;
+	@Required
 	private String password;
+	@Required
 	private DateTime joinDate;
+	@Required
 	private DateTime lastLogin;
-	private List<Video> videoList;
+	@Required
 	private boolean bAdmin;
 	
 	
@@ -32,7 +41,6 @@ public class User {
 		password = "";
 		joinDate = new DateTime(0, 0, 0, 0, 0);
 		lastLogin = new DateTime(0,0,0,0,0);
-		videoList = new List<Video>();
 		bAdmin = false;
 	}
 	
@@ -43,17 +51,15 @@ public class User {
 	 * @param pass
 	 * @param jDate
 	 * @param llogin
-	 * @param vList
 	 * @param admin
 	 */
-	public User(String name, String emailaddr, String pass, DateTime jDate, DateTime llogin, List<Video> vList, boolean admin)
+	public User(String name, String emailaddr, String pass, DateTime jDate, DateTime llogin, boolean admin)
 	{
 		username = name;
 		email = emailaddr;
 		password = pass;
 		joinDate = jDate;
 		lastLogin = llogin;
-		videoList = vList;
 		bAdmin = admin;
 	}
 	
@@ -138,47 +144,17 @@ public class User {
 	}
 	
 	/**
-	 * Get the Video List for the user
+	 * Set administrative rights
 	 */
-	public List<Video> getVideoList()
+	public void setAdmin(boolean admin)
 	{
-		return videoList;
-	}
-	
-	/**
-	 * Set the Video List for the user
-	 */
-	public void setVideoList(List<Video> vList)
-	{
-		videoList = vList;
-	}
-	
-	/**
-	 * Replace a video in the user list with a new video
-	 */
-	public boolean setVideo(Video Old, Video New)
-	{
-		return true;
-	}
-	
-	/**
-	 * Determine if the User has Curator or Admin rights
-	 */
-	public boolean isPrivileged()
-	{
-		// Determine this based on User name
-		// If the username is set then the person has privileged rights
-		if (username != "")
-		{
-			return true;
-		}
-		return false;
+		bAdmin = admin;
 	}
 	
 	/**
 	 * Determine if the user is an Admin
 	 */
-	public booleain isAdmin()
+	public boolean isAdmin()
 	{
 		return bAdmin;
 	}

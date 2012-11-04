@@ -2,6 +2,10 @@ package models;
 
 import java.util.List;
 import org.joda.time.DateTime;
+import java.util.*;
+import javax.persistence.*;
+import play.db.jpa.*;
+import play.data.validation.*;
 
 /** 
  * 
@@ -10,15 +14,23 @@ import org.joda.time.DateTime;
  * This defines the Video Model to store all video related information
  *
  */
-public class Video {
+ @Entity
+public class Video extends Model {
+	@Required
 	private int id;
+	@Required
 	private DateTime uploadDate;
-	private String videoType;
+	@Required
 	private String owner;
+	@Required
 	private String title;
+	@Required
 	private String description;
+	@Required
 	private List<String> tags;
+	@Required
 	private int likes;
+	@Required
 	private int views;
 	
 	/**
@@ -33,11 +45,10 @@ public class Video {
 	 * @param numLike
 	 * @param numView
 	 */
-	public Video(int ident, DateTime upDate, String vidType, String own, String vTitle, String desc, List<String> tag, int numLike, int numView)
+	public Video(int ident, DateTime upDate, String own, String vTitle, String desc, List<String> tag, int numLike, int numView)
 	{
 		id = ident;
 		uploadDate = upDate;
-		videoType = vidType;
 		owner = own;
 		title = vTitle;
 		description = desc;
@@ -63,11 +74,11 @@ public class Video {
 	}
 	
 	/**
-	 * Get the video type for the video
+	 * Set the upload date for this video
 	 */
-	public String getVideoType()
+	public void setUploadDate(DateTime upDate)
 	{
-		return videoType;
+		uploadDate = upDate;
 	}
 	
 	/**
@@ -79,11 +90,27 @@ public class Video {
 	}
 	
 	/**
+	 * Set the owner of the video
+	 */
+	public void setOwner(String Owner)
+	{
+		owner = Owner;
+	}
+	
+	/**
 	 * Get the Title of the video
 	 */
 	public String getTitle()
 	{
 		return title;
+	}
+	
+	/**
+	 * Set the Title of the video
+	 */
+	public void setTitle(String Title)
+	{
+		title = Title;
 	}
 	
 	/**
@@ -95,11 +122,27 @@ public class Video {
 	}
 	
 	/**
+	 * Set the description for the video
+	 */
+	public void setDesc(String desc)
+	{
+		description = desc;
+	}
+	
+	/**
 	 * Get the Tags for the video
 	 */
 	public List<String> getTags()
 	{
 		return tags;
+	}
+	
+	/**
+	 * Set the tags for the video
+	 */
+	public void setTags(List<String> tagList)
+	{
+		tags = tagList;
 	}
 	
 	/**
