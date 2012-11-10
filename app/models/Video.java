@@ -16,8 +16,8 @@ import play.data.validation.*;
  */
  @Entity
 public class Video extends Model {
-	@Required
-	private int id;
+	//@Required
+	//private int id;
 	@Required
 	private DateTime uploadDate;
 	@Required
@@ -27,7 +27,8 @@ public class Video extends Model {
 	@Required
 	private String description;
 	@Required
-	private List<String> tags;
+	@ManyToMany(cascade=CascadeType.PERSIST)
+	private List<Tag> tags;
 	@Required
 	private int likes;
 	@Required
@@ -45,9 +46,9 @@ public class Video extends Model {
 	 * @param numLike
 	 * @param numView
 	 */
-	public Video(int ident, DateTime upDate, String own, String vTitle, String desc, List<String> tag, int numLike, int numView)
+	public Video(int ident, DateTime upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
 	{
-		id = ident;
+		//id = ident;
 		uploadDate = upDate;
 		owner = own;
 		title = vTitle;
@@ -57,12 +58,24 @@ public class Video extends Model {
 		views = numView;		
 	}
 	
+	//initial Video constructor for testing
+	public Video(DateTime upDate, String own, String vTitle, String desc)
+	{
+		uploadDate = upDate;
+		owner = own;
+		title = vTitle;
+		description = desc;
+		likes = 0;
+		views = 0;
+	}
+	
 	/**
 	 * Get the id for the video
 	 */
 	public int getID()
 	{
-		return id;
+		//return id;
+		return 0;
 	}
 	
 	/**
@@ -132,7 +145,7 @@ public class Video extends Model {
 	/**
 	 * Get the Tags for the video
 	 */
-	public List<String> getTags()
+	public List<Tag> getTags()
 	{
 		return tags;
 	}
@@ -140,7 +153,7 @@ public class Video extends Model {
 	/**
 	 * Set the tags for the video
 	 */
-	public void setTags(List<String> tagList)
+	public void setTags(List<Tag> tagList)
 	{
 		tags = tagList;
 	}

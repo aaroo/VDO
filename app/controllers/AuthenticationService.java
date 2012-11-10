@@ -1,6 +1,6 @@
 package controllers;
 
-import models.User;
+import models.*;
 import org.joda.time.DateTime;
 import java.util.*;
 import javax.persistence.*;
@@ -10,7 +10,7 @@ import play.libs.*;
 
 public class AuthenticationService extends Controller {
 	private String authToken;
-	private static User currentUser;
+	private static UserAccount currentUser;
 	
 	/**
 	 * Constructor for the service
@@ -24,12 +24,12 @@ public class AuthenticationService extends Controller {
 	/**
 	 * Get the current logged in user
 	 */
-	public static User getCurrentUser()
+	public static UserAccount getCurrentUser()
 	{
 		return currentUser;
 	}
 	
-	public static void setCurrentUser(User curUser)
+	public static void setCurrentUser(UserAccount curUser)
 	{
 		currentUser = curUser;
 	}
@@ -39,12 +39,12 @@ public class AuthenticationService extends Controller {
 	 */
 	public boolean login(String username, String password)
 	{
-		User curUser = User.find("username = ? And password = ?", username, password).first();
+		UserAccount curUser = UserAccount.find("username = ? And password = ?", username, password).first();
 		if (curUser != null && getCurrentUser() == null)
 		{
 			// user exists and there is currently no user logged in
 			// modify the last login time
-			curUser.setLastLogin(new DateTime());
+			curUser.setLastLogin(new Date());
 			// set the current logged in user to this user
 			setCurrentUser(curUser);
 			// save the modifications to this user
@@ -62,13 +62,13 @@ public class AuthenticationService extends Controller {
 	 */
 	public boolean signUp(String username, String password, String email)
 	{
-		if (User.find("username = ?", username).first() != null || getCurrentUser() != null)
+		if (UserAccount.find("username = ?", username).first() != null || getCurrentUser() != null)
 		{
 			// user already exists or someone is already logged in so return false
 			return false;
 		}
 		
-		User newUser =  new User(username, email, password, new DateTime(), new DateTime(), false).save();
+		UserAccount newUser =  new UserAccount(email, password, username, new Date(), new Date(), false).save();
 		setCurrentUser(newUser);
 		return true;
 	}
