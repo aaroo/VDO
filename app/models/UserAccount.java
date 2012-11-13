@@ -45,11 +45,104 @@ public class UserAccount extends Model {
 		return find("byEmailAndPassword", email, password).first();
 	}
 	
-	public void setLastLogin(Date d) {
-		this.lastLogin = d;
-	}
-	
 	public String toString() {
 		return email;
 	}
+	
+	/**
+	 * Get the username for the user
+	 */
+	public String getUserName()
+	{
+		return username;
+	}
+	
+	/**
+	 * Set the username for the user
+	 */
+	public void setUserName(String name)
+	{
+		username = name;
+	}
+	
+	/**
+	 * Get the email address for the user
+	 */
+	public String getEmail()
+	{
+		return email;
+	}
+	
+	/**
+	 * Set the email address for the user
+	 */
+	public void setEmail(String emailaddr)
+	{
+		email = emailaddr;
+	}
+	
+	/**
+	 * Get the password for the user
+	 */
+	public String getPassword()
+	{
+		return password;
+	}
+	
+	/**
+	 * Set the password for the user
+	 */
+	public void setPassword(String pass)
+	{
+		password = pass;
+	}
+	
+	/**
+	 * Get the join date for the user
+	 */
+	public Date getJoinDate()
+	{
+		return joinDate;
+	}
+	
+	/**
+	 * Set the join date for the user
+	 */
+	public void setJoinDate(Date jDate)
+	{
+		joinDate = jDate;
+	}
+	
+	/**
+	 * Get the last login for the user
+	 */
+	public Date getLastLogin()
+	{
+		return lastLogin;
+	}
+	
+	/**
+	 * Set the last login for the user
+	 */
+	public void setLastLogin(Date llog)
+	{
+		lastLogin = llog;
+	}
+	
+	/**
+	 * Set administrative rights
+	 */
+	public void setAdmin(boolean admin)
+	{
+		isAdmin = admin;
+	}
+	
+	/**
+	 * Determine if the user is an Admin
+	 */
+	public boolean isAdmin()
+	{
+		return isAdmin;
+	}
+
 }

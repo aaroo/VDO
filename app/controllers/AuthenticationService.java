@@ -39,7 +39,7 @@ public class AuthenticationService extends Controller {
 	 */
 	public boolean login(String username, String password)
 	{
-		UserAccount curUser = UserAccount.find("username = ? And password = ?", username, password).first();
+		UserAccount curUser = UserAccount.find("byUsernameAndPassword", username, password).first();
 		if (curUser != null && getCurrentUser() == null)
 		{
 			// user exists and there is currently no user logged in
@@ -62,7 +62,7 @@ public class AuthenticationService extends Controller {
 	 */
 	public boolean signUp(String username, String password, String email)
 	{
-		if (UserAccount.find("username = ?", username).first() != null || getCurrentUser() != null)
+		if (UserAccount.find("byUsername", username).first() != null || getCurrentUser() != null)
 		{
 			// user already exists or someone is already logged in so return false
 			return false;
