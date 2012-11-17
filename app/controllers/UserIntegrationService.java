@@ -9,36 +9,54 @@ import play.*;
 import play.mvc.*;
 import play.libs.*;
 
+/** 
+ * UserIntegrationService Class
+ * 
+ * @author Cella Sum, Arudra Venkat, Dustin Overmiller, and Justin Kambic
+ * 
+ * This defines the services needed for all user requirements
+ *
+ */
 public class UserIntegrationService extends Controller {
 		
 	/**
-	 * Constructor for the service
+	 * searchUser(String username)
+	 * 
+	 * This function retrieves all user objects from the database that contain the search string
+	 * 
+	 * @param username
 	 */
-	public UserIntegrationService()
+	public static void searchUser(String username)
 	{
+		// get the list of users that match a given username
+		List<UserAccount> userList = UserAccount.find("byUsernameLike", username).fetch();
+		renderJSON(userList);
 	}
 	
 	/**
-	 * Search the User list for those that contain the username provided
+	 * getUserInfo(String username)
+	 * 
+	 * This obtains the user information from the database for a given username
+	 * 
+	 * @param username
 	 */
-	public List<UserAccount> searchUser(String username)
+	public static void getUserInfo(String username)
 	{
-		return UserAccount.find("byUsernameLike", username).fetch();
+		// get the user information for a given username
+		UserAccount user = UserAccount.find("byUsername", username).first();
+		renderJSON(user);
 	}
 	
 	/**
-	 * Obtain and return the user information for a given username
+	 * deleteUser(String username)
+	 * 
+	 * This function searches for a given user and if found will delete it from the database
+	 * 
+	 * @param username
 	 */
-	public UserAccount getUserInfo(String username)
+	public static void deleteUser(String username)
 	{
-		return UserAccount.find("byUsername", username).first();
-	}
-	
-	/**
-	 * Delete a given user from the database
-	 */
-	public boolean deleteUser(String username)
-	{
+		// find the user in the database
 		UserAccount curUser = UserAccount.find("byUsername", username).first();
 		if (curUser != null)
 		{
@@ -51,45 +69,68 @@ public class UserIntegrationService extends Controller {
 			}
 			// delete the user
 			curUser.delete();
-			return true;
+			renderJSON(true);
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		return false;
+		renderJSON(false);
 	}
 	
 	/**
-	 * Edit a given user in the database
+	 * editUser(UserAccount modUser)
+	 * 
+	 * Takes the user that is passed in, searches for the username in the database and will modify the user attributes
+	 * 
+	 * @param modUser
 	 */
-	public boolean editUser(UserAccount modUser)
+	public static void editUser(UserAccount modUser)
 	{
+		// get the user from the database
 		UserAccount curUser = UserAccount.find("byUsername", modUser.getUserName()).first();
 		if (curUser != null)
 		{
+			// make the modifications to the user, first make sure the email is unique
+			if (UserAccount.find("byEmail", modUser.getEmail()).first() != null)
+			{
+				// the email is not unique cannot modify the user
+				renderJSON(false);
+			}
 			curUser.setEmail(modUser.getEmail());
 			curUser.setPassword(modUser.getPassword());
 			curUser.setAdmin(modUser.isAdmin());
 			// check to make sure the current user is not this user
 			if (AuthenticationService.getCurrentUser() != null && AuthenticationService.getCurrentUser().getUserName().equals(curUser.getUserName()))
 			{
-				// set the current user to this modified user
+				// update the current user to this modified user
 				AuthenticationService.setCurrentUser(curUser);
 			}
-			// delete the user
-			curUser.save();
-			return true;
+			// try to save the user
+			try
+			{
+				curUser.save();
+			}
+			catch (Exception e)
+			{
+				renderJSON(false);
+			}
+			renderJSON(true);
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		return false;
+		renderJSON(false);
 	}
 	
 	/**
-	 * Get the list of all users
+	 * getAllUsers()
+	 * 
+	 * Obtains the list of all users from the database
+	 * 
 	 */
-	public List<UserAccount> getAllUsers(UserAccount modUser)
+	public static void getAllUsers()
 	{
-		return UserAccount.findAll();
+		// get the list of all users from the database
+		List<UserAccount> userList = UserAccount.findAll();
+		renderJSON(userList);
 	}
 	
 

@@ -7,6 +7,14 @@ import play.db.jpa.*;
 import play.data.validation.*;
 import org.joda.time.DateTime;
 
+/** 
+ * UserAccount Class
+ * 
+ * @author Cella Sum, Arudra Venkat, Dustin Overmiller, and Justin Kambic
+ * 
+ * This defines all requirements needed to implement the User model
+ *
+ */
 @Entity
 public class UserAccount extends Model {
 	
@@ -31,6 +39,18 @@ public class UserAccount extends Model {
 	@Required 
 	private Date lastLogin;
 	
+	/**
+	 * UserAccount(String email, String password, String username, Date joinDate, Date lastLogin, boolean isAdmin)
+	 * 
+	 * Constructor for the User Account Object
+	 * 
+	 * @param email
+	 * @param password
+	 * @param username
+	 * @param joinDate
+	 * @param lastLogin
+	 * @param isAdmin
+	 */
 	public UserAccount(String email, String password, String username,
 		Date joinDate, Date lastLogin, boolean isAdmin) {
 		this.email = email;
@@ -41,16 +61,36 @@ public class UserAccount extends Model {
 		this.lastLogin = lastLogin;
 	}
 	
+	/**
+	 * connect(String email, String password)
+	 * 
+	 * Find the user that has the given Email address and password
+	 * 
+	 * @param email
+	 * @param password
+	 * @return
+	 */
 	public static UserAccount connect(String email, String password) {
 		return find("byEmailAndPassword", email, password).first();
 	}
 	
+	/**
+	 * toString()
+	 * 
+	 * Return the User object as a string
+	 * 
+	 * @return
+	 */
 	public String toString() {
 		return email;
 	}
 	
 	/**
-	 * Get the username for the user
+	 * getUserName()
+	 * 
+	 * Get the User name associated with the User
+	 * 
+	 * @return
 	 */
 	public String getUserName()
 	{
@@ -58,7 +98,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
+	 * setUserName(String name)
+	 * 
 	 * Set the username for the user
+	 * 
+	 * @param name
 	 */
 	public void setUserName(String name)
 	{
@@ -66,7 +110,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Get the email address for the user
+	 * getEmail()
+	 * 
+	 * Get the Email for the given user
+	 * 
+	 * @return
 	 */
 	public String getEmail()
 	{
@@ -74,15 +122,27 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Set the email address for the user
+	 * setEmail(String emailaddr)
+	 * 
+	 * Make sure the address is valid by seeing that it contains an @ sign with a period after that and if so set the email address
+	 * 
+	 * @param emailaddr
 	 */
 	public void setEmail(String emailaddr)
 	{
-		email = emailaddr;
+		// make sure it is a valid address
+		if (emailaddr.contains("@") && emailaddr.lastIndexOf(".") > emailaddr.lastIndexOf("@"))
+		{
+			email = emailaddr;
+		}
 	}
 	
 	/**
-	 * Get the password for the user
+	 * getPassword()
+	 * 
+	 * Return the password for the user
+	 * 
+	 * @return
 	 */
 	public String getPassword()
 	{
@@ -90,7 +150,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Set the password for the user
+	 * setPassword(String pass)
+	 * 
+	 * Set the User's password
+	 * 
+	 * @param pass
 	 */
 	public void setPassword(String pass)
 	{
@@ -98,7 +162,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Get the join date for the user
+	 * getJoinDate
+	 * 
+	 * Return the User's join data
+	 * 
+	 * @return
 	 */
 	public Date getJoinDate()
 	{
@@ -106,7 +174,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Set the join date for the user
+	 * setJoinDate(Date jDate)
+	 * 
+	 * Set the User's Join Date
+	 * 
+	 * @param jDate
 	 */
 	public void setJoinDate(Date jDate)
 	{
@@ -114,7 +186,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Get the last login for the user
+	 * getLastLogin()
+	 * 
+	 * Get the User's last login
+	 * 
+	 * @return
 	 */
 	public Date getLastLogin()
 	{
@@ -122,7 +198,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Set the last login for the user
+	 * setLastLogin(Date llog)
+	 * 
+	 * Set the User's last login in date
+	 * 
+	 * @param llog
 	 */
 	public void setLastLogin(Date llog)
 	{
@@ -130,7 +210,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Set administrative rights
+	 * setAdmin(boolean admin)
+	 * 
+	 * Set whether or not the User has admin privilege
+	 * 
+	 * @param admin
 	 */
 	public void setAdmin(boolean admin)
 	{
@@ -138,7 +222,11 @@ public class UserAccount extends Model {
 	}
 	
 	/**
-	 * Determine if the user is an Admin
+	 * isAdmin()
+	 * 
+	 * Return the flag indicating whether the User has administrative privileges
+	 * 
+	 * @return
 	 */
 	public boolean isAdmin()
 	{

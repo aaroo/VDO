@@ -8,18 +8,19 @@ import play.db.jpa.*;
 import play.data.validation.*;
 
 /** 
+ * Video Class
  * 
  * @author Cella Sum, Arudra Venkat, Dustin Overmiller, and Justin Kambic
  * 
- * This defines the Video Model to store all video related information
+ * This defines all requirements needed to implement the video model
  *
  */
  @Entity
 public class Video extends Model {
-	//@Required
-	//private int id;
 	@Required
-	private DateTime uploadDate;
+	private String id;
+	@Required
+	private Date uploadDate;
 	@Required
 	private String owner;
 	@Required
@@ -35,7 +36,10 @@ public class Video extends Model {
 	private int views;
 	
 	/**
+	 * Video(String ident, Date upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
+	 * 
 	 * Constructor for the Video Class
+	 * 
 	 * @param ident
 	 * @param upDate
 	 * @param vidType
@@ -46,9 +50,9 @@ public class Video extends Model {
 	 * @param numLike
 	 * @param numView
 	 */
-	public Video(int ident, DateTime upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
+	public Video(String ident, Date upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
 	{
-		//id = ident;
+		id = ident;
 		uploadDate = upDate;
 		owner = own;
 		title = vTitle;
@@ -59,7 +63,7 @@ public class Video extends Model {
 	}
 	
 	//initial Video constructor for testing
-	public Video(DateTime upDate, String own, String vTitle, String desc)
+	public Video(Date upDate, String own, String vTitle, String desc)
 	{
 		uploadDate = upDate;
 		owner = own;
@@ -70,32 +74,47 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Get the id for the video
+	 * getID()
+	 * 
+	 * Return the id associated with the video
+	 * 
+	 * @return
 	 */
-	public int getID()
+	public String getID()
 	{
-		//return id;
-		return 0;
+		return id;
 	}
 	
 	/**
-	 * Get the upload date for this video
+	 * getUploadDate()
+	 * 
+	 * Return the upload date for the video
+	 * 
+	 * @return
 	 */
-	public DateTime getUploadDate()
+	public Date getUploadDate()
 	{
 		return uploadDate;
 	}
 	
 	/**
-	 * Set the upload date for this video
+	 * setUploadDate(Date upDate)
+	 * 
+	 * Set the upload date for the video
+	 * 
+	 * @param upDate
 	 */
-	public void setUploadDate(DateTime upDate)
+	public void setUploadDate(Date upDate)
 	{
 		uploadDate = upDate;
 	}
 	
 	/**
-	 * Get the owner of the video
+	 * getOwner()
+	 * 
+	 * Return the owner of the video
+	 * 
+	 * @return
 	 */
 	public String getOwner()
 	{
@@ -103,7 +122,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Set the owner of the video
+	 * setOwner(String Owner)
+	 * 
+	 * Set the Owner of the video
+	 * 
+	 * @param Owner
 	 */
 	public void setOwner(String Owner)
 	{
@@ -111,7 +134,11 @@ public class Video extends Model {
 	}
 	
 	/**
+	 * getTitle()
+	 * 
 	 * Get the Title of the video
+	 * 
+	 * @return
 	 */
 	public String getTitle()
 	{
@@ -119,7 +146,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Set the Title of the video
+	 * setTitle(String Title)
+	 * 
+	 * Set the title of the video
+	 * 
+	 * @param Title
 	 */
 	public void setTitle(String Title)
 	{
@@ -127,7 +158,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Get the description for the video
+	 * getDesc()
+	 * 
+	 * Get the Description for the video
+	 * 
+	 * @return
 	 */
 	public String getDesc()
 	{
@@ -135,7 +170,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Set the description for the video
+	 * setDesc(String desc)
+	 * 
+	 * Set the Description for the video
+	 * 
+	 * @param desc
 	 */
 	public void setDesc(String desc)
 	{
@@ -143,7 +182,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Get the Tags for the video
+	 * getTags()
+	 * 
+	 * Obtain the list of tags associated with the video
+	 * 
+	 * @return
 	 */
 	public List<Tag> getTags()
 	{
@@ -151,7 +194,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Set the tags for the video
+	 * setTags(List<Tag> tagList)
+	 * 
+	 * Set the list of tags associated with the video
+	 * 
+	 * @param tagList
 	 */
 	public void setTags(List<Tag> tagList)
 	{
@@ -159,7 +206,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Get the number of Likes for the video
+	 * getLikes()
+	 * 
+	 * Get the number of likes for the video
+	 * 
+	 * @return
 	 */
 	public int getLikes()
 	{
@@ -167,7 +218,11 @@ public class Video extends Model {
 	}
 	
 	/**
-	 * Set the number of likes for a video
+	 * setLikes(int like)
+	 * 
+	 * Set the number of likes for the video
+	 * 
+	 * @param like
 	 */
 	public void setLikes(int like)
 	{
@@ -175,7 +230,11 @@ public class Video extends Model {
 	}
 	
 	/**
+	 * getViews()
+	 * 
 	 * Get the number of views for the video
+	 * 
+	 * @return
 	 */
 	public int getViews()
 	{
@@ -183,7 +242,11 @@ public class Video extends Model {
 	}
 	
 	/**
+	 * setViews(int view)
+	 * 
 	 * Set the number of views for the video
+	 * 
+	 * @param view
 	 */
 	public void setViews(int view)
 	{
