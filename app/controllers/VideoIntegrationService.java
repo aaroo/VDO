@@ -86,12 +86,12 @@ public class VideoIntegrationService extends Controller{
 				}
 			}
 			// return the result
-			render(videoFeed);
+			renderJSON(videoFeed);
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			render(false);
+			renderJSON(false);
 		}
 	}
 	
@@ -187,6 +187,7 @@ public class VideoIntegrationService extends Controller{
 		
 		try
 		{
+			// try uploading the video metadata to Youtube and get the token
 			URL uploadUrl = new URL("http://gdata.youtube.com/action/GetUploadToken");
 			FormUploadToken token = AuthenticationService.getYouTubeService().getFormUploadToken(uploadUrl, newEntry);
 			System.out.println(token.getUrl());
@@ -220,7 +221,7 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void updateVideo(String id, String title, String description, List<VideoTag> tags, String category)
 	{
-		// get the video to delete from YouTube
+		// get the video feed to update the metadata in YouTube
 		String videoUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
 		try
 		{
@@ -243,6 +244,8 @@ public class VideoIntegrationService extends Controller{
 				// update the category
 				videoEntry.getMediaGroup().clearCategories();
 				videoEntry.getMediaGroup().addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
+				// save the updates
+				videoEntry.update();
 			}
 			else
 			{
@@ -288,7 +291,56 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void searchVideos(List<VideoTag> tags)
 	{
-		renderJSON(false);
+		// get all of the videos and metadata from Youtube
+		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		// setup the initial query
+		try
+		{
+			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
+			// set to filter just the programs videos
+			query.setAuthor("vdo575@gmail.com");
+			// set to order by published videos
+			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
+			// set it to search based on the tags
+			for (int iI = 0; iI < tags.size(); iI++)
+			{
+				CategoryFilter catFilter = new CategoryFilter();
+				catFilter.addCategory(new Category(YouTubeNamespace.KEYWORD_SCHEME, tags.get(iI).toString()));
+				query.addCategoryFilter(catFilter);
+			}
+			
+			// set the format to be JSON
+			query.setResultFormat(ResultFormat.JSON);
+			
+			// get the video feed from YouTube
+			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+				
+			// set the number of likes and views for each entry
+			for (VideoEntry videoEntry : videoFeed.getEntries())
+			{
+				// get the media group for the video feed
+				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+				// get the video in the database that is associated with the video id
+				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+				// get the video statistics for the video
+				YtStatistics stats = videoEntry.getStatistics();
+				if(stats != null && video != null ) 
+				{
+					// set the number of views for the video
+					stats.setViewCount(video.getViews());
+					// set the number of likes for the video
+					stats.setFavoriteCount(video.getLikes());
+				}
+			}
+			
+			// return the result
+			renderJSON(videoFeed);
+		}
+		catch (Exception e)
+		{
+			// error get the user's videos
+			renderJSON(false);
+		}
 	}
 	
 	/**
@@ -301,7 +353,60 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void searchVideos(List<VideoTag> tags, String owner)
 	{
-		renderJSON(false);
+		// get all of the videos and metadata from Youtube
+		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		// setup the initial query
+		try
+		{
+			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
+			// set to filter just the programs videos
+			query.setAuthor("vdo575@gmail.com");
+			// set to order by published videos
+			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
+			// add the developer tag to grab just the owner videos
+			CategoryFilter categoryFilter = new CategoryFilter();
+			categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
+			query.addCategoryFilter(categoryFilter);
+			// set it to search based on the tags
+			for (int iI = 0; iI < tags.size(); iI++)
+			{
+				CategoryFilter catFilter = new CategoryFilter();
+				catFilter.addCategory(new Category(YouTubeNamespace.KEYWORD_SCHEME, tags.get(iI).toString()));
+				query.addCategoryFilter(catFilter);
+			}
+				
+			// set the format to be JSON
+			query.setResultFormat(ResultFormat.JSON);
+			
+			// get the video feed from YouTube
+			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+				
+			// set the number of likes and views for each entry
+			for (VideoEntry videoEntry : videoFeed.getEntries())
+			{
+				// get the media group for the video feed
+				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+				// get the video in the database that is associated with the video id
+				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+				// get the video statistics for the video
+				YtStatistics stats = videoEntry.getStatistics();
+				if(stats != null && video != null ) 
+				{
+					// set the number of views for the video
+					stats.setViewCount(video.getViews());
+					// set the number of likes for the video
+					stats.setFavoriteCount(video.getLikes());
+				}
+			}
+				
+			// return the result
+			renderJSON(videoFeed);
+		}
+		catch (Exception e)
+		{
+			// error get the user's videos
+			renderJSON(false);
+		}
 	}
 	
 	/**
@@ -313,7 +418,37 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void getVideoInfo(String id)
 	{
-		renderJSON(false);
+		// get the video of interest from YouTube
+		String videoUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		try
+		{
+			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(videoUrl), VideoEntry.class);
+					
+			// Get the database entry for the video to combine with the youtube feed
+			if (videoEntry != null)
+			{
+				// get the media group for the video feed
+				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+				// get the video in the database that is associated with the video id
+				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+				// get the video statistics for the video
+				YtStatistics stats = videoEntry.getStatistics();
+				if(stats != null && video != null ) 
+				{
+					// set the number of views for the video
+					stats.setViewCount(video.getViews());
+					// set the number of likes for the video
+					stats.setFavoriteCount(video.getLikes());	
+					renderJSON(videoEntry);
+				}
+			}
+			renderJSON(false);
+		}
+		catch (Exception e)
+		{
+			// error interacting with YouTube API
+			renderJSON(false);
+		}
 	}
 	
 	/**
