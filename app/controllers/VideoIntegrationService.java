@@ -1,13 +1,32 @@
 package controllers;
 
 import models.*;
+
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import com.google.gdata.client.*;
+import com.google.gdata.client.Query.*;
+import com.google.gdata.client.youtube.*;
+import com.google.gdata.data.*;
+import com.google.gdata.data.geo.impl.*;
+import com.google.gdata.data.media.*;
+import com.google.gdata.data.media.mediarss.*;
+import com.google.gdata.data.youtube.*;
+import com.google.gdata.data.extensions.*;
+import com.google.gdata.util.*;
+import java.io.IOException;
+import java.io.File;
+import java.net.URL;
+
 import org.joda.time.DateTime;
 import java.util.*;
 import javax.persistence.*;
 import play.*;
 import play.mvc.*;
 import play.libs.*;
+import sun.security.krb5.internal.ccache.Tag;
 
 /** 
  * VideoIntegrationService Class
@@ -29,14 +48,51 @@ public class VideoIntegrationService extends Controller{
 	public static void getVideos(String owner)
 	{
 		// get all of the videos and metadata from Youtube
-		
-		
-		// get all the videos from the database for that username
-		List<Video> vidList = Video.find("byOwner", owner).fetch();
-		
-		// combine the lists
-		
-		// return the result
+		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		// setup the initial query
+		try
+		{
+			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
+			// set to filter just the programs videos
+			query.setAuthor("vdo575@gmail.com");
+			// set to order by published videos
+			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
+			// set it to grab just the user's videos
+			CategoryFilter categoryFilter = new CategoryFilter();
+			categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
+			query.addCategoryFilter(categoryFilter);
+			
+			// set the format to be JSON
+			query.setResultFormat(ResultFormat.JSON);
+			
+			// get the video feed from YouTube
+			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+				
+			// set the number of likes and views for each entry
+			for (VideoEntry videoEntry : videoFeed.getEntries())
+			{
+				// get the media group for the video feed
+				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
+				// get the video in the database that is associated with the video id
+				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+				// get the video statistics for the video
+				YtStatistics stats = videoEntry.getStatistics();
+				if(stats != null && video != null ) 
+				{
+					// set the number of views for the video
+					stats.setViewCount(video.getViews());
+					// set the number of likes for the video
+					stats.setFavoriteCount(video.getLikes());	
+				}
+			}
+			// return the result
+			render(videoFeed);
+		}
+		catch (Exception e)
+		{
+			// error get the user's videos
+			render(false);
+		}
 	}
 	
 	/**
@@ -47,28 +103,50 @@ public class VideoIntegrationService extends Controller{
 	 * @param id
 	 */
 	public static void deleteVideo(String id)
-	{
-		// delete it from the database
-		Video delVideo = Video.find("byId", id).first();
-		if (delVideo != null)
+	{	
+		// get the video to delete from YouTube
+		String deleteUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		try
 		{
-			// found the video in the database
-			delVideo.delete();
+			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(deleteUrl), VideoEntry.class);
+		
+			// check to make sure the VideoEntry is valid
+			if (videoEntry != null)
+			{
+				// delete the video
+				videoEntry.delete();
+			}
+			else
+			{
+				// could not find the video from YouTube
+				renderJSON(false);
+			}
+			
+			// delete it from the database
+			Video delVideo = Video.find("byId", id).first();
+			if (delVideo != null)
+			{
+				// found the video in the database
+				delVideo.delete();
+			}
+			else
+			{
+				// could not find the video in the database
+				renderJSON(false);
+			}
+			
+			// result was successful
+			renderJSON(true);
 		}
-		else
+		catch (Exception e)
 		{
-			// could not find the video in the database
+			// error interacting with YouTube API
 			renderJSON(false);
 		}
-		
-		// delete the video from the Youtube API
-		
-		// result was successful
-		renderJSON(true);
 	}
 	
 	/**
-	 * addVideo(String title, String description, List<Tag> tags, String category)
+	 * addVideo(String title, String description, List<VideoTag> tags, String category)
 	 * 
 	 * Upload the video and metadata to the Youtube as well as upload metadata to the database
 	 * 
@@ -77,14 +155,61 @@ public class VideoIntegrationService extends Controller{
 	 * @param tags
 	 * @param category
 	 */
-	public static void addVideo(String title, String description, List<Tag> tags, String category)
+	public static void addVideo(String title, String description, List<VideoTag> tags, String category)
 	{
-		renderJSON(false);
+		// create a new video entry for the upload
+		VideoEntry newEntry = new VideoEntry();
+		
+		// get the media group for the new entry
+		YouTubeMediaGroup mg = newEntry.getOrCreateMediaGroup();
+		mg.setTitle(new MediaTitle());
+		// set the title of the video
+		mg.getTitle().setPlainTextContent(title);
+		// set the category of the video
+		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
+		mg.setKeywords(new MediaKeywords());
+		for (int iI = 0; iI < tags.size(); iI++)
+		{
+			// set the tags/keywords for the video
+			mg.getKeywords().addKeyword(tags.get(iI).toString());
+		}
+		mg.setDescription(new MediaDescription());
+		// set the description for the video
+		mg.getDescription().setPlainTextContent(description);
+		mg.setPrivate(false);
+		// add a developer tag for this user
+		mg.addCategory(new MediaCategory(YouTubeNamespace.DEVELOPER_TAG_SCHEME, AuthenticationService.getCurrentUser().getUserName()));
+		// add the user category
+		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
+
+		// set the video location
+		newEntry.setLocation("Philadelphia, PA");
+		
+		try
+		{
+			URL uploadUrl = new URL("http://gdata.youtube.com/action/GetUploadToken");
+			FormUploadToken token = AuthenticationService.getYouTubeService().getFormUploadToken(uploadUrl, newEntry);
+			System.out.println(token.getUrl());
+			System.out.println(token.getToken());
+		}
+		catch (Exception e)
+		{
+			// error uploading the video
+			renderJSON(false);
+		}
+		
+		// TODO get the id from the video upload
+		String videoId = "";
+		
+		// add the video to the database
+		Video video = new Video(videoId, new Date(), AuthenticationService.getCurrentUser().getUserName(), title, description, category, tags, 0, 0).save();
+		// return the video id
+		renderJSON(videoId);
 	}
 	
 
 	/**
-	 * updateVideo(String title, String description, List<Tag> tags, String category)
+	 * updateVideo(String title, String description, List<VideoTag> tags, String category)
 	 * 
 	 * Update the video metadata within Youtube
 	 * 
@@ -93,32 +218,88 @@ public class VideoIntegrationService extends Controller{
 	 * @param tags
 	 * @param category
 	 */
-	public static void updateVideo(String title, String description, List<Tag> tags, String category)
+	public static void updateVideo(String id, String title, String description, List<VideoTag> tags, String category)
 	{
-		renderJSON(false);
+		// get the video to delete from YouTube
+		String videoUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		try
+		{
+			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(videoUrl), VideoEntry.class);
+				
+			// check to make sure the VideoEntry is valid
+			if (videoEntry != null)
+			{
+				// update the video's metadata
+				// update the title of the video
+				videoEntry.getMediaGroup().getTitle().setPlainTextContent(title);
+				// update the description
+				videoEntry.getMediaGroup().getDescription().setPlainTextContent(description);
+				// update the video tags
+				videoEntry.getMediaGroup().getKeywords().clearKeywords();
+				for (int iI = 0; iI < tags.size(); iI++)
+				{
+					videoEntry.getMediaGroup().getKeywords().addKeyword(tags.get(iI).toString());
+				}
+				// update the category
+				videoEntry.getMediaGroup().clearCategories();
+				videoEntry.getMediaGroup().addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
+			}
+			else
+			{
+				// could not find the video from YouTube
+				renderJSON(false);
+			}
+			
+			// Update the database with this data just to be accurate
+			Video video = Video.find("byId", id).first();
+			if (video != null)
+			{
+				// set the video title
+				video.setTitle(title);
+				// set the video description
+				video.setDesc(description);
+				// set the video tags
+				video.setTags(tags);
+				// set the category
+				video.setCategory(category);
+				// save the updates
+				video.save();
+			}
+			else
+			{
+				renderJSON(false);
+			}
+			// result was successful
+			renderJSON(true);
+		}
+		catch (Exception e)
+		{
+			// error interacting with YouTube API
+			renderJSON(false);
+		}
 	}
 	
 	/**
-	 * searchVideos(List<Tag> tags)
+	 * searchVideos(List<VideoTag> tags)
 	 * 
 	 * take the list of tags and fetch all relating videos
 	 * 
 	 * @param tags
 	 */
-	public static void searchVideos(List<Tag> tags)
+	public static void searchVideos(List<VideoTag> tags)
 	{
 		renderJSON(false);
 	}
 	
 	/**
-	 * searchVideos(List<Tag> tags, String owner)
+	 * searchVideos(List<VideoTag> tags, String owner)
 	 * 
 	 * take the list of tags and the owner and fetch all relating videos
 	 * 
 	 * @param tags
 	 * @param owner
 	 */
-	public static void searchVideos(List<Tag> tags, String owner)
+	public static void searchVideos(List<VideoTag> tags, String owner)
 	{
 		renderJSON(false);
 	}

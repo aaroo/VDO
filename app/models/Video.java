@@ -28,39 +28,14 @@ public class Video extends Model {
 	@Required
 	private String description;
 	@Required
+	private String category;
+	@Required
 	@ManyToMany(cascade=CascadeType.PERSIST)
-	private List<Tag> tags;
+	private List<VideoTag> tags;
 	@Required
 	private int likes;
 	@Required
 	private int views;
-	
-	/**
-	 * Video(String ident, Date upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
-	 * 
-	 * Constructor for the Video Class
-	 * 
-	 * @param ident
-	 * @param upDate
-	 * @param vidType
-	 * @param own
-	 * @param vTitle
-	 * @param desc
-	 * @param tag
-	 * @param numLike
-	 * @param numView
-	 */
-	public Video(String ident, Date upDate, String own, String vTitle, String desc, List<Tag> tag, int numLike, int numView)
-	{
-		id = ident;
-		uploadDate = upDate;
-		owner = own;
-		title = vTitle;
-		description = desc;
-		tags = tag;
-		likes = numLike;
-		views = numView;		
-	}
 	
 	//initial Video constructor for testing
 	public Video(Date upDate, String own, String vTitle, String desc)
@@ -71,6 +46,35 @@ public class Video extends Model {
 		description = desc;
 		likes = 0;
 		views = 0;
+	}
+	
+	/**
+	 * Video(String ident, Date upDate, String own, String vTitle, String desc, String cat, List<VideoTag> tag, int numLike, int numView)
+	 * 
+	 * Constructor for the Video Class
+	 * 
+	 * @param ident
+	 * @param upDate
+	 * @param vidType
+	 * @param own
+	 * @param vTitle
+	 * @param desc
+	 * @param cat
+	 * @param tag
+	 * @param numLike
+	 * @param numView
+	 */
+	public Video(String ident, Date upDate, String own, String vTitle, String desc, String cat, List<VideoTag> tag, int numLike, int numView)
+	{
+		id = ident;
+		uploadDate = upDate;
+		owner = own;
+		title = vTitle;
+		description = desc;
+		category = cat;
+		tags = tag;
+		likes = numLike;
+		views = numView;		
 	}
 	
 	/**
@@ -158,6 +162,30 @@ public class Video extends Model {
 	}
 	
 	/**
+	 * getCategory()
+	 * 
+	 * Get the Category of the video
+	 * 
+	 * @return
+	 */
+	public String getCategory()
+	{
+		return category;
+	}
+	
+	/**
+	 * setCateogry(String Cat)
+	 * 
+	 * Set the category of the video
+	 * 
+	 * @param Cat
+	 */
+	public void setCategory(String Cat)
+	{
+		category = Cat;
+	}
+	
+	/**
 	 * getDesc()
 	 * 
 	 * Get the Description for the video
@@ -188,19 +216,19 @@ public class Video extends Model {
 	 * 
 	 * @return
 	 */
-	public List<Tag> getTags()
+	public List<VideoTag> getTags()
 	{
 		return tags;
 	}
 	
 	/**
-	 * setTags(List<Tag> tagList)
+	 * setTags(List<VideoTag> tagList)
 	 * 
 	 * Set the list of tags associated with the video
 	 * 
 	 * @param tagList
 	 */
-	public void setTags(List<Tag> tagList)
+	public void setTags(List<VideoTag> tagList)
 	{
 		tags = tagList;
 	}

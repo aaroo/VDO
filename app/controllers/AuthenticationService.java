@@ -7,6 +7,18 @@ import javax.persistence.*;
 import play.*;
 import play.mvc.*;
 import play.libs.*;
+import com.google.gdata.client.*;
+import com.google.gdata.client.youtube.*;
+import com.google.gdata.data.*;
+import com.google.gdata.data.geo.impl.*;
+import com.google.gdata.data.media.*;
+import com.google.gdata.data.media.mediarss.*;
+import com.google.gdata.data.youtube.*;
+import com.google.gdata.data.extensions.*;
+import com.google.gdata.util.*;
+import java.io.IOException;
+import java.io.File;
+import java.net.URL;
 
 /** 
  * AuthenticationService Class
@@ -18,7 +30,7 @@ import play.libs.*;
  */
 public class AuthenticationService extends Controller {
 	// Authentication string for Youtube API
-	private static String authToken = "";
+	private static YouTubeService oYouTubeService = null;
 	// The Current user for the program
 	private static UserAccount currentUser = null;
 	
@@ -132,62 +144,58 @@ public class AuthenticationService extends Controller {
 	}
 	
 	/**
-	 * getAuthToken()
+	 * getYouTubeService()
 	 * 
-	 * Return the Authentication token used for the YouTube API
+	 * Return the YouTube Service object used for interacting with the Youtube API
 	 * 
 	 * @return
 	 */
-	public static String getAuthToken()
+	public static YouTubeService getYouTubeService()
 	{
 		// return the authentication string
-		return authToken;
+		return oYouTubeService;
 	}
 	
 	/**
-	 * setAuthToken(String token)
+	 * setYouTubeService(YouTubeService youtubeService)
 	 * 
-	 * Set the Authentication token for the YouTube API
+	 * Set the YouTube Service for interacting with the YouTube API
 	 * 
 	 * @param token
 	 */
-	private static void setAuthToken(String token)
+	private static void setYouTubeService(YouTubeService youtubeService)
 	{
 		// set the authentication string
-		authToken = token;
+		oYouTubeService = youtubeService;
 	}
 	
 	/**
 	 * openYouTubeAPI()
 	 * 
-	 * Open the YouTube API for our project and set the Authentication token that is returned from the post
+	 * Open the YouTube API for our project and set the service object to be stored later
 	 * 
 	 */
 	public static void openYouTubeAPI()
 	{
 		// set the paramaters for the request
+		String clientID = "";
+		String developer_key = "";
 		String MasterUserName = "vdo575@gmail.com";
 		String MasterPassword = "vvddoo575";
-		String MasterSource = "Login for master YouTube Account";
-		String loginUrl = "https://www.google.com/accounts/ClientLogin";
-		Map<String,String> params = new HashMap<String, String>();
-		params.put("Email", MasterUserName);
-		params.put("Passwd", MasterPassword);
-		params.put("service", "youtube");
-		params.put("source", MasterSource);
-		// post the request and get the response
-		WS.HttpResponse resp = WS.url(loginUrl)
-                        .setParameters(params)
-                        .post();
-		// get the authentication token
-		String token = resp.getJson().getAsJsonObject().get("Auth").getAsString();
-		if (token == "")
+		YouTubeService service = new YouTubeService(clientID, developer_key);
+		try
 		{
-			// authentication token was not set, error with opening YouTube API
+			// set the user credentials
+			service.setUserCredentials(MasterUserName, MasterPassword);
+			// store the service for later usage
+			AuthenticationService.setYouTubeService(service);
+		}
+		catch (AuthenticationException e)
+		{
+			// the authentication was invalid
 			renderJSON(false);
 		}
-		// got the token so set the authentication token and return success
-		AuthenticationService.setAuthToken(token);		
+		// successfully connected to YouTube API
 		renderJSON(true);
 	}
 	
