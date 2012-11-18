@@ -178,8 +178,8 @@ public class AuthenticationService extends Controller {
 	public static void openYouTubeAPI()
 	{
 		// set the paramaters for the request
-		String clientID = "";
-		String developer_key = "";
+		String clientID = "vdo575@gmail.com";
+		String developer_key = "AI39si486NEocHWHv8P-hJgwYvUAaXSbImRn4EtClWtCc2kaGiGsPGt-Rj3qZ8cOJPV-uxcptia2EamACPgk3zHsZNOnvpkypQ";
 		String MasterUserName = "vdo575@gmail.com";
 		String MasterPassword = "vvddoo575";
 		YouTubeService service = new YouTubeService(clientID, developer_key);
