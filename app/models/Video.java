@@ -18,7 +18,7 @@ import play.data.validation.*;
  @Entity
 public class Video extends Model {
 	@Required
-	private String id;
+	private String vidId;
 	@Required
 	private Date uploadDate;
 	@Required
@@ -66,7 +66,7 @@ public class Video extends Model {
 	 */
 	public Video(String ident, Date upDate, String own, String vTitle, String desc, String cat, List<VideoTag> tag, int numLike, int numView)
 	{
-		id = ident;
+		vidId = ident;
 		uploadDate = upDate;
 		owner = own;
 		title = vTitle;
@@ -80,13 +80,13 @@ public class Video extends Model {
 	/**
 	 * getID()
 	 * 
-	 * Return the id associated with the video
+	 * Return the vidId associated with the video
 	 * 
 	 * @return
 	 */
 	public String getID()
 	{
-		return id;
+		return vidId;
 	}
 	
 	/**
