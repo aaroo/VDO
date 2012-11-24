@@ -61,7 +61,7 @@ public class VideoIntegrationService extends Controller{
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
 			// set to filter just the programs videos
-			query.setAuthor("vdo575@gmail.com");
+			query.setAuthor("vdo575");
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
 			// set it to grab just the user's videos
@@ -324,7 +324,7 @@ public class VideoIntegrationService extends Controller{
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
 			// set to filter just the programs videos
-			query.setAuthor("vdo575@gmail.com");
+			query.setAuthor("vdo575");
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
 			// set it to search based on the tags
@@ -390,7 +390,7 @@ public class VideoIntegrationService extends Controller{
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
 			// set to filter just the programs videos
-			query.setAuthor("vdo575@gmail.com");
+			query.setAuthor("vdo575");
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
 			// add the developer tag to grab just the owner videos
