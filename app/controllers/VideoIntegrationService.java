@@ -55,7 +55,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		try
 		{
@@ -89,13 +89,14 @@ public class VideoIntegrationService extends Controller{
 					stats.setFavoriteCount(video.getLikes());	
 				}
 			}
+			
 			// return the result
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		catch (Exception e)
 		{
 			// error getting the user's videos
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 	}
 	
@@ -318,7 +319,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		try
 		{
@@ -357,12 +358,12 @@ public class VideoIntegrationService extends Controller{
 			}
 			
 			// return the result
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 	}
 	
@@ -384,7 +385,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		try
 		{
@@ -427,12 +428,12 @@ public class VideoIntegrationService extends Controller{
 			}
 				
 			// return the result
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			renderJSON(ConvertFeedToJSON(videoFeed));
+			renderJSON(new JSONObject(videoFeed).toString());
 		}
 	}
 	
@@ -451,7 +452,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(ConvertFeedToJSON(videoEntry));
+			renderJSON(new JSONObject(videoEntry).toString());
 		}
 		try
 		{
@@ -471,17 +472,17 @@ public class VideoIntegrationService extends Controller{
 					// set the number of views for the video
 					stats.setViewCount(video.getViews());
 					// set the number of likes for the video
-					stats.setFavoriteCount(video.getLikes());	
-					renderJSON(videoEntry);
+					stats.setFavoriteCount(video.getLikes());
+					renderJSON(new JSONObject(videoEntry).toString());
 				}
 			}
-			
-			renderJSON(ConvertFeedToJSON(videoEntry));
+
+			renderJSON(new JSONObject(videoEntry).toString());
 		}
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON(ConvertFeedToJSON(videoEntry));
+			renderJSON(new JSONObject(videoEntry).toString());
 		}
 	}
 	
@@ -543,63 +544,4 @@ public class VideoIntegrationService extends Controller{
 		renderJSON("{\"result\": " + numViews +"}");
 	}
 	
-	/**
-	 * ConvertFeedToJSON
-	 * 
-	 * Convert the VideoFeed Object into a JSON string
-	 * 
-	 * @param videoFeed
-	 * @return
-	 */
-	private static String ConvertFeedToJSON(VideoFeed videoFeed)
-	{
-		if (videoFeed != null)
-		{
-			JSONObject jsonObject = new JSONObject();
-			try
-			{
-				jsonObject.put("Total Results", videoFeed.getTotalResults());
-			}
-			catch (Exception e)
-			{
-				return new JSONObject().toString();
-			}
-			return jsonObject.toString();
-		}
-		else
-		{
-			return new JSONObject().toString();
-		}
-	}
-	
-	/**
-	 * ConvertFeedToJSON
-	 * 
-	 * Convert the VideoEntry Object into a JSON String
-	 * 
-	 * @param videoEntry
-	 * @return
-	 */
-	private static String ConvertFeedToJSON(VideoEntry videoEntry)
-	{
-		if (videoEntry != null)
-		{
-			JSONObject jsonObject = new JSONObject();
-			try
-			{
-				jsonObject.put("Video ID", videoEntry.getId());
-			}
-			catch (Exception e)
-			{
-				return new JSONObject().toString();
-			}
-			return jsonObject.toString();
-		}
-		else
-		{
-			return new JSONObject().toString();
-		}
-	}
-	
-
 }
