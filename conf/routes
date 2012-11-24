@@ -3,10 +3,33 @@
 # ~~~~
 
 # Home page
-GET     /                                       Application.index
+GET     /                                       					Application.index
 
-GET		/application/makenewvid					Application.index
-GET		/application/makenewuser				Application.index
+GET		/application/makenewvid										Application.index
+GET		/application/makenewuser									Application.index
+
+# Authentication Service
+GET		/authenticationservice/login/{email}/{password}				AuthenticationService.login
+GET		/authenticationservice/signup/{username}/{password}/{email}	AuthenticationService.signUp
+GET		/authenticationservice/signOut								AuthenticationService.signOut
+GET		/authenticationservice/openyoutubeapi						AuthenticationService.openYouTubeAPI
+
+# UserIntegration Service
+GET		/userintegrationservice/searchuser/{username}				UserIntegrationService.searchUser
+GET		/userintegrationservice/getuserinfo/{username}				UserIntegrationService.getUserInfo
+GET		/userintegrationservice/deleteuser/{username}				UserIntegrationService.deleteUser
+GET		/userintegrationservice/edituser							UserIntegrationService.editUser
+GET		/userintegrationservice/getallusers							UserIntegrationService.getAllUsers
+
+# VideoIntegration Service
+GET		/videointegrationservice/getvideos/{owner}					VideoIntegrationService.getVideos
+GET		/videointegrationservice/deletevideo/{id}					VideoIntegrationService.deleteVideo
+GET		/videointegrationservice/addvideo							VideoIntegrationService.addVideo
+GET		/videointegrationservice/updatevideo						VideoIntegrationService.updateVideo
+GET		/videointegrationservice/searchvideos						VideoIntegrationService.searchVideos
+GET		/videointegrationservice/getvideoinfo/{id}					VideoIntegrationService.getVideoInfo
+GET		/videointegrationservice/likevideo/{id}						VideoIntegrationService.likeVideo
+GET		/videointegrationservice/viewvideo/{id}						VideoIntegrationService.viewVideo
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

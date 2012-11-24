@@ -69,11 +69,11 @@ public class UserIntegrationService extends Controller {
 			}
 			// delete the user
 			curUser.delete();
-			renderJSON(true);
+			renderJSON("{\"result\": " + true +"}");
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		renderJSON(false);
+		renderJSON("{\"result\": " + false +"}");
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class UserIntegrationService extends Controller {
 			if (UserAccount.find("byEmail", modUser.getEmail()).first() != null)
 			{
 				// the email is not unique cannot modify the user
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			curUser.setEmail(modUser.getEmail());
 			curUser.setPassword(modUser.getPassword());
@@ -111,13 +111,13 @@ public class UserIntegrationService extends Controller {
 			}
 			catch (Exception e)
 			{
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
-			renderJSON(true);
+			renderJSON("{\"result\": " + true +"}");
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		renderJSON(false);
+		renderJSON("{\"result\": " + false +"}");
 	}
 	
 	/**

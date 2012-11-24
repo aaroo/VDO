@@ -19,6 +19,7 @@ import com.google.gdata.util.*;
 import java.io.IOException;
 import java.io.File;
 import java.net.URL;
+import org.json.JSONObject;
 
 import org.joda.time.DateTime;
 import java.util.*;
@@ -50,6 +51,12 @@ public class VideoIntegrationService extends Controller{
 		// get all of the videos and metadata from Youtube
 		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
 		// setup the initial query
+		VideoFeed videoFeed = null;
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON(ConvertFeedToJSON(videoFeed));
+		}
 		try
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
@@ -62,19 +69,16 @@ public class VideoIntegrationService extends Controller{
 			categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
 			query.addCategoryFilter(categoryFilter);
 			
-			// set the format to be JSON
-			query.setResultFormat(ResultFormat.JSON);
-			
 			// get the video feed from YouTube
-			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
-				
+			videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+			
 			// set the number of likes and views for each entry
 			for (VideoEntry videoEntry : videoFeed.getEntries())
 			{
 				// get the media group for the video feed
 				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
 				// get the video in the database that is associated with the video id
-				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+				Video video = Video.find("byId", mediaGroup.getVideoId()).first(); 
 				// get the video statistics for the video
 				YtStatistics stats = videoEntry.getStatistics();
 				if(stats != null && video != null ) 
@@ -86,12 +90,12 @@ public class VideoIntegrationService extends Controller{
 				}
 			}
 			// return the result
-			renderJSON(videoFeed);
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 		catch (Exception e)
 		{
-			// error get the user's videos
-			renderJSON(false);
+			// error getting the user's videos
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 	}
 	
@@ -106,6 +110,11 @@ public class VideoIntegrationService extends Controller{
 	{	
 		// get the video to delete from YouTube
 		String deleteUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON("{\"result\": " + false +"}");
+		}
 		try
 		{
 			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(deleteUrl), VideoEntry.class);
@@ -119,7 +128,7 @@ public class VideoIntegrationService extends Controller{
 			else
 			{
 				// could not find the video from YouTube
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			
 			// delete it from the database
@@ -132,16 +141,16 @@ public class VideoIntegrationService extends Controller{
 			else
 			{
 				// could not find the video in the database
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			
 			// result was successful
-			renderJSON(true);
+			renderJSON("{\"result\": " + true +"}");
 		}
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON(false);
+			renderJSON("{\"result\": " + false +"}");
 		}
 	}
 	
@@ -157,6 +166,12 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void addVideo(String title, String description, List<VideoTag> tags, String category)
 	{
+		String videoId = "";
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON("{\"id\": " + videoId +"}");
+		}
 		// create a new video entry for the upload
 		VideoEntry newEntry = new VideoEntry();
 		
@@ -196,16 +211,15 @@ public class VideoIntegrationService extends Controller{
 		catch (Exception e)
 		{
 			// error uploading the video
-			renderJSON(false);
+			renderJSON("{\"id\": " + videoId +"}");
 		}
 		
 		// TODO get the id from the video upload
-		String videoId = "";
 		
 		// add the video to the database
 		Video video = new Video(videoId, new Date(), AuthenticationService.getCurrentUser().getUserName(), title, description, category, tags, 0, 0).save();
 		// return the video id
-		renderJSON(videoId);
+		renderJSON("{\"id\": " + videoId +"}");
 	}
 	
 
@@ -223,6 +237,11 @@ public class VideoIntegrationService extends Controller{
 	{
 		// get the video feed to update the metadata in YouTube
 		String videoUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON("{\"result\": " + false +"}");
+		}
 		try
 		{
 			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(videoUrl), VideoEntry.class);
@@ -250,7 +269,7 @@ public class VideoIntegrationService extends Controller{
 			else
 			{
 				// could not find the video from YouTube
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			
 			// Update the database with this data just to be accurate
@@ -270,15 +289,15 @@ public class VideoIntegrationService extends Controller{
 			}
 			else
 			{
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			// result was successful
-			renderJSON(true);
+			renderJSON("{\"result\": " + true +"}");
 		}
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON(false);
+			renderJSON("{\"result\": " + false +"}");
 		}
 	}
 	
@@ -293,7 +312,14 @@ public class VideoIntegrationService extends Controller{
 	{
 		// get all of the videos and metadata from Youtube
 		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		// initialize the return structure
+		VideoFeed videoFeed = null;
 		// setup the initial query
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON(ConvertFeedToJSON(videoFeed));
+		}
 		try
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
@@ -309,11 +335,8 @@ public class VideoIntegrationService extends Controller{
 				query.addCategoryFilter(catFilter);
 			}
 			
-			// set the format to be JSON
-			query.setResultFormat(ResultFormat.JSON);
-			
 			// get the video feed from YouTube
-			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+			videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
 				
 			// set the number of likes and views for each entry
 			for (VideoEntry videoEntry : videoFeed.getEntries())
@@ -334,12 +357,12 @@ public class VideoIntegrationService extends Controller{
 			}
 			
 			// return the result
-			renderJSON(videoFeed);
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			renderJSON(false);
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 	}
 	
@@ -355,7 +378,14 @@ public class VideoIntegrationService extends Controller{
 	{
 		// get all of the videos and metadata from Youtube
 		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		// Initialize the return structure
+		VideoFeed videoFeed = null;
 		// setup the initial query
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON(ConvertFeedToJSON(videoFeed));
+		}
 		try
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
@@ -374,12 +404,9 @@ public class VideoIntegrationService extends Controller{
 				catFilter.addCategory(new Category(YouTubeNamespace.KEYWORD_SCHEME, tags.get(iI).toString()));
 				query.addCategoryFilter(catFilter);
 			}
-				
-			// set the format to be JSON
-			query.setResultFormat(ResultFormat.JSON);
 			
 			// get the video feed from YouTube
-			VideoFeed videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
+			videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
 				
 			// set the number of likes and views for each entry
 			for (VideoEntry videoEntry : videoFeed.getEntries())
@@ -400,12 +427,12 @@ public class VideoIntegrationService extends Controller{
 			}
 				
 			// return the result
-			renderJSON(videoFeed);
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			renderJSON(false);
+			renderJSON(ConvertFeedToJSON(videoFeed));
 		}
 	}
 	
@@ -420,9 +447,15 @@ public class VideoIntegrationService extends Controller{
 	{
 		// get the video of interest from YouTube
 		String videoUrl = "https://gdata.youtube.com/feeds/api/users/default/uploads/" + id;
+		VideoEntry videoEntry = null;
+		if (AuthenticationService.getYouTubeService() == null)
+		{
+			// youtube api is not open
+			renderJSON(ConvertFeedToJSON(videoEntry));
+		}
 		try
 		{
-			VideoEntry videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(videoUrl), VideoEntry.class);
+			videoEntry = AuthenticationService.getYouTubeService().getEntry(new URL(videoUrl), VideoEntry.class);
 					
 			// Get the database entry for the video to combine with the youtube feed
 			if (videoEntry != null)
@@ -442,12 +475,13 @@ public class VideoIntegrationService extends Controller{
 					renderJSON(videoEntry);
 				}
 			}
-			renderJSON(false);
+			
+			renderJSON(ConvertFeedToJSON(videoEntry));
 		}
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON(false);
+			renderJSON(ConvertFeedToJSON(videoEntry));
 		}
 	}
 	
@@ -477,7 +511,7 @@ public class VideoIntegrationService extends Controller{
 		}
 		
 		// return number of likes
-		renderJSON(numLikes);		
+		renderJSON("{\"result\": " + numLikes +"}");		
 	}
 	
 	/**
@@ -506,7 +540,65 @@ public class VideoIntegrationService extends Controller{
 		}
 		
 		// return number of views
-		renderJSON(numViews);
+		renderJSON("{\"result\": " + numViews +"}");
+	}
+	
+	/**
+	 * ConvertFeedToJSON
+	 * 
+	 * Convert the VideoFeed Object into a JSON string
+	 * 
+	 * @param videoFeed
+	 * @return
+	 */
+	private static String ConvertFeedToJSON(VideoFeed videoFeed)
+	{
+		if (videoFeed != null)
+		{
+			JSONObject jsonObject = new JSONObject();
+			try
+			{
+				jsonObject.put("Total Results", videoFeed.getTotalResults());
+			}
+			catch (Exception e)
+			{
+				return new JSONObject().toString();
+			}
+			return jsonObject.toString();
+		}
+		else
+		{
+			return new JSONObject().toString();
+		}
+	}
+	
+	/**
+	 * ConvertFeedToJSON
+	 * 
+	 * Convert the VideoEntry Object into a JSON String
+	 * 
+	 * @param videoEntry
+	 * @return
+	 */
+	private static String ConvertFeedToJSON(VideoEntry videoEntry)
+	{
+		if (videoEntry != null)
+		{
+			JSONObject jsonObject = new JSONObject();
+			try
+			{
+				jsonObject.put("Video ID", videoEntry.getId());
+			}
+			catch (Exception e)
+			{
+				return new JSONObject().toString();
+			}
+			return jsonObject.toString();
+		}
+		else
+		{
+			return new JSONObject().toString();
+		}
 	}
 	
 

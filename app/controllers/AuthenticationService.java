@@ -50,10 +50,11 @@ public class AuthenticationService extends Controller {
 	/**
 	 * setCurrentUser(UserAccount curUser)
 	 * 
-	 * Set the Current user of the program
+	 * Set the Current user of the program, use the @Util identify to avoid redirection
 	 * 
 	 * @param curUser
 	 */
+	@Util
 	public static void setCurrentUser(UserAccount curUser)
 	{
 		// set the current user
@@ -86,14 +87,14 @@ public class AuthenticationService extends Controller {
 			}
 			catch (Exception e)
 			{
-				renderJSON(false);
+				renderJSON("{\"result\": " + false +"}");
 			}
 			// return true
-			renderJSON(true);
+			renderJSON("{\"result\": " + true +"}");
 		}
 
 		// could not find the user or someone is already logged in so return false
-		renderJSON(false);
+		renderJSON("{\"result\": " + false +"}");
 	}
 	
 	/**
@@ -111,7 +112,7 @@ public class AuthenticationService extends Controller {
 		if (UserAccount.find("byEmail", email).first() != null || UserAccount.find("byUsername", username).first() != null || AuthenticationService.getCurrentUser() != null)
 		{
 			// user already exists or someone is already logged in so return false
-			renderJSON(false);
+			renderJSON("{\"result\": " + false +"}");
 		}
 		
 		// create the new user and save it in the database
@@ -123,11 +124,11 @@ public class AuthenticationService extends Controller {
 		}
 		catch (Exception e)
 		{
-			renderJSON(false);
+			renderJSON("{\"result\": " + false +"}");
 		}
 				
 		// return success
-		renderJSON(true);
+		renderJSON("{\"result\": " + true +"}");
 	}
 	
 	/**
@@ -140,7 +141,7 @@ public class AuthenticationService extends Controller {
 	{
 		// set the current user to null and return true
 		AuthenticationService.setCurrentUser(null);
-		renderJSON(true);
+		renderJSON("{\"result\": " + true +"}");
 	}
 	
 	/**
@@ -159,10 +160,11 @@ public class AuthenticationService extends Controller {
 	/**
 	 * setYouTubeService(YouTubeService youtubeService)
 	 * 
-	 * Set the YouTube Service for interacting with the YouTube API
+	 * Set the YouTube Service for interacting with the YouTube API, specify the @Util function to avoid redirection
 	 * 
 	 * @param token
 	 */
+	@Util
 	private static void setYouTubeService(YouTubeService youtubeService)
 	{
 		// set the authentication string
@@ -178,25 +180,33 @@ public class AuthenticationService extends Controller {
 	public static void openYouTubeAPI()
 	{
 		// set the paramaters for the request
-		String clientID = "vdo575@gmail.com";
-		String developer_key = "AI39si486NEocHWHv8P-hJgwYvUAaXSbImRn4EtClWtCc2kaGiGsPGt-Rj3qZ8cOJPV-uxcptia2EamACPgk3zHsZNOnvpkypQ";
-		String MasterUserName = "vdo575@gmail.com";
-		String MasterPassword = "vvddoo575";
-		YouTubeService service = new YouTubeService(clientID, developer_key);
-		try
+		if (AuthenticationService.getYouTubeService() == null)
 		{
-			// set the user credentials
-			service.setUserCredentials(MasterUserName, MasterPassword);
-			// store the service for later usage
-			AuthenticationService.setYouTubeService(service);
+			String clientID = "vdo575";
+			String developer_key = "AI39si486NEocHWHv8P-hJgwYvUAaXSbImRn4EtClWtCc2kaGiGsPGt-Rj3qZ8cOJPV-uxcptia2EamACPgk3zHsZNOnvpkypQ";
+			String MasterUserName = "vdo575@gmail.com";
+			String MasterPassword = "vvddoo575";
+			YouTubeService service = new YouTubeService(clientID, developer_key);
+			try
+			{
+				// set the user credentials
+				service.setUserCredentials(MasterUserName, MasterPassword);
+				// store the service for later usage
+				AuthenticationService.setYouTubeService(service);
+			}
+			catch (AuthenticationException e)
+			{
+				// the authentication was invalid
+				renderJSON("{\"result\": " + false +"}");
+			}
+			// successfully connected to YouTube API
+			renderJSON("{\"result\": " + true +"}");
 		}
-		catch (AuthenticationException e)
+		else
 		{
-			// the authentication was invalid
-			renderJSON(false);
+			// already open
+			renderJSON("{\"result\": " + true +"}");
 		}
-		// successfully connected to YouTube API
-		renderJSON(true);
 	}
 	
 
