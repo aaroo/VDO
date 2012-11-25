@@ -64,10 +64,13 @@ public class VideoIntegrationService extends Controller{
 			query.setAuthor("vdo575");
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
-			// set it to grab just the user's videos
-			CategoryFilter categoryFilter = new CategoryFilter();
-			categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
-			query.addCategoryFilter(categoryFilter);
+			// set it to grab just the user's videos if set otherwise ignore it and grab all videos
+			if (owner != "" && owner != " ")
+			{
+				CategoryFilter categoryFilter = new CategoryFilter();
+				categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
+				query.addCategoryFilter(categoryFilter);
+			}
 			
 			// get the video feed from YouTube
 			videoFeed = AuthenticationService.getYouTubeService().query(query, VideoFeed.class);
