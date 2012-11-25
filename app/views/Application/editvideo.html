@@ -1,0 +1,86 @@
+#{extends 'main.html' /}
+#{set title:'Project VDO-Edit Video' /}
+
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">Project<mark>VDO</mark></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active"><a href="/application/myvideos">Videos</a></li>
+                            <li><a href="/application/users">User List</a></li>
+                            <li><a href="/application/edituser/vdo575">Profile</a></li>
+                            <li><a href="#logout">Logout</a></li>
+
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+        	 <h1>Edit Video</h1>
+        	 
+        	   <script type="text/x-handlebars">
+        	  {{#view App.EditVideoView
+        	  		titleBinding="App.editVideoController.video.title"
+        	  		descriptionBinding="App.editVideoController.video.description"
+        	  		categoryBinding="App.editVideoController.video.category"
+        	  		idBinding="App.editVideoController.video.id"
+        	  }}
+        	  <div class="span6">
+	        	  <div class="videoWrapper">
+	        	  <iframe id="ytplayer" type="text/html" width="320" height="180" {{bindAttr src="view.url"}} frameborder="0"/>
+	        	  </div>
+	        	</div>
+	        	<div class="span6">
+	        	  <form>
+					  <div class="control-group">
+					    <label class="control-label" for="inputTitle">Title</label>
+					    <div class="controls">
+					      <input type="text" id="inputTItle" {{bindAttr value="view.title"}}>
+					    </div>
+					  </div>
+					  <div class="control-group">
+					    <label class="control-label" for="inputDescription">Description</label>
+					    <div class="controls">
+					    	<textarea rows="3" id="inputDescription" {{bindAttr value="view.description"}}></textarea>
+					    </div>
+					  </div>
+					  <div class="control-group">
+					  	<label class="control-label" for="inputCategory">Category</label>
+					  	<div class="controls">
+					  		<select>
+				  			{{#each App.categoryController}}
+				  				{{#if isSelectedCategory}}
+				  					<option {{bindAttr value="term"}} selected>{{label}}</option>
+				  				{{else}}
+				  					<option {{bindAttr value="term"}}>{{label}}</option>
+				  				{{/if}}
+				  				 
+				  			{{/each}}
+	 
+	  					</select>
+					  	</div>
+					  </div>
+					  <div class="control-group">
+					  		<button type="submit" class="btn btn-info btn-large">Save Changes</button>
+					  		<button type="button" class="btn btn-danger btn-large">Delete Video</button>
+					  </div>
+				</form>
+			</div>
+
+{{/view}}
+        	   </script>
+        </div>
+        

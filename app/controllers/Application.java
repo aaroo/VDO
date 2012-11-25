@@ -13,6 +13,22 @@ public class Application extends Controller {
     public static void index() {
         render();
     }
+    
+    public static void myvideos() {
+    	render();
+    }
+    
+    public static void editvideo() {
+       render();
+    }
+    
+    public static void edituser() {
+       render();
+    }
+    
+    public static void users() {
+       render();
+    }
 
 	public static void makeNewVid(
 		int userID,

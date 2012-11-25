@@ -1,0 +1,24 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<div>
+	Currently, this page just creates test entries in our DB.
+</div>
+
+#{form @Application.makeNewUser()}
+
+	<label for="email">Email: </label>
+	<input type="text" name="email" id="email" value="${params.email}"/>
+	<br/>
+	<label for="password">Password: </label>
+	<input type="text" name="password" id="password" value="${params.password}"/>
+	<br/>
+	<label for="userName">Username: </label>
+	<input type="text" name="userName" id="userName" value="${params.userName}"/>
+	<br/>
+	<input type="submit" value="Add Test User" ></input>
+#{/form}
+
+
+	
+<!--#{welcome /}-->

@@ -1,0 +1,55 @@
+#{extends 'main.html' /}
+#{set title:'Project VDO - My Videos' /}
+
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">Project<mark>VDO</mark></a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active"><a href="/application/myvideos">Videos</a></li>
+                            <li><a href="/application/users">User List</a></li>
+                            <li><a href="/application/edituser/vdo575">Profile</a></li>
+                            <li><a href="#logout">Logout</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+        	 <h1>My Videos <button class="btn btn-large btn-info" type="button">Add a New Video</button></h1>
+        	 
+        	  <script type="text/x-handlebars">
+        
+	        	<table class="table">
+              <tbody>
+              	{{#each App.videolistController}}
+                <tr>
+                  <td>
+                  	<div class="span4">
+                  		<img class="thumbnail" {{bindAttr src="thumbnail"}} {{bindAttr alt="title"}} width="300" height="200">
+                  	</div>
+                  </td>
+                  <td>
+                  	<h5>{{title}} <a class="btn btn-small btn" {{bindAttr href="editLink"}}><i class="icon-wrench"></i></a></h5>
+                  	<p>{{description}}</p>
+                  	<p>Added On: {{published}}</p>
+                  	<p>Tagged Under: {{category}}</p>
+                  </td>
+                </tr>
+               {{/each}}
+              </tbody>
+            </table>
+        </script>
+        </div>

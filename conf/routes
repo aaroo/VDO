@@ -7,6 +7,10 @@ GET     /                                       					Application.index
 
 GET		/application/makenewvid										Application.index
 GET		/application/makenewuser									Application.index
+GET		/application/myvideos									   Application.myvideos
+GET		/application/editvideo/{id}								Application.editvideo
+GET		/application/edituser/{username}							Application.edituser
+GET		/application/users											Application.users
 
 # Authentication Service
 GET		/authenticationservice/login/{email}/{password}				AuthenticationService.login
