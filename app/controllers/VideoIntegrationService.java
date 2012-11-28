@@ -10,6 +10,9 @@ import com.google.gdata.client.*;
 import com.google.gdata.client.Query.*;
 import com.google.gdata.client.youtube.*;
 import com.google.gdata.data.*;
+import com.google.gdata.data.docs.*;
+import com.google.gdata.client.docs.*;
+import com.google.gdata.data.acl.*;
 import com.google.gdata.data.geo.impl.*;
 import com.google.gdata.data.media.*;
 import com.google.gdata.data.media.mediarss.*;
@@ -159,16 +162,17 @@ public class VideoIntegrationService extends Controller{
 	}
 	
 	/**
-	 * addVideo(String title, String description, List<VideoTag> tags, String category)
+	 * addVideo(String filename, String title, String description, List<VideoTag> tags, String category)
 	 * 
 	 * Upload the video and metadata to the Youtube as well as upload metadata to the database
 	 * 
+	 * @param filename
 	 * @param title
 	 * @param description
 	 * @param tags
 	 * @param category
 	 */
-	public static void addVideo(String title, String description, List<VideoTag> tags, String category)
+	public static void addVideo(String filename, String title, String description, List<VideoTag> tags, String category)
 	{
 		String videoId = "";
 		if (AuthenticationService.getYouTubeService() == null)
@@ -204,13 +208,26 @@ public class VideoIntegrationService extends Controller{
 		// set the video location
 		newEntry.setLocation("Philadelphia, PA");
 		
+		// set the media file source
+		String mimeType = DocumentListEntry.MediaType.fromFileName(filename).getMimeType();
+		MediaFileSource ms = new MediaFileSource(new File(filename), mimeType);
+		newEntry.setMediaSource(ms);
+		
+		// try uploading the video to YouTube
 		try
 		{
 			// try uploading the video metadata to Youtube and get the token
-			URL uploadUrl = new URL("http://gdata.youtube.com/action/GetUploadToken");
-			FormUploadToken token = AuthenticationService.getYouTubeService().getFormUploadToken(uploadUrl, newEntry);
-			System.out.println(token.getUrl());
-			System.out.println(token.getToken());
+			URL uploadUrl = new URL("http://uploads.gdata.youtube.com/feeds/api/users/default/uploads");
+			VideoEntry createdEntry = AuthenticationService.getYouTubeService().insert(uploadUrl, newEntry);
+			if (createdEntry.getId() != "")
+			{
+				videoId = createdEntry.getId();
+				// add the video to the database
+				Video video = new Video(videoId, new Date(), AuthenticationService.getCurrentUser().getUserName(), title, description, category, tags, 0, 0).save();
+				// return the video id
+				renderJSON("{\"id\": " + videoId +"}");
+			}
+
 		}
 		catch (Exception e)
 		{
@@ -218,11 +235,7 @@ public class VideoIntegrationService extends Controller{
 			renderJSON("{\"id\": " + videoId +"}");
 		}
 		
-		// TODO get the id from the video upload
-		
-		// add the video to the database
-		Video video = new Video(videoId, new Date(), AuthenticationService.getCurrentUser().getUserName(), title, description, category, tags, 0, 0).save();
-		// return the video id
+		// failed to upload video
 		renderJSON("{\"id\": " + videoId +"}");
 	}
 	
