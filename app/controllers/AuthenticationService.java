@@ -140,8 +140,15 @@ public class AuthenticationService extends Controller {
 	public static void signOut()
 	{
 		// set the current user to null and return true
-		AuthenticationService.setCurrentUser(null);
-		renderJSON("{\"result\": " + true +"}");
+		if (AuthenticationService.getCurrentUser() != null)
+		{
+			AuthenticationService.setCurrentUser(null);
+			renderJSON("{\"result\": " + true +"}");
+		}
+		else
+		{
+			renderJSON("{\"result\": " + false +"}");
+		}
 	}
 	
 	/**

@@ -86,11 +86,12 @@ public class UserIntegrationService extends Controller {
 	public static void editUser(UserAccount modUser)
 	{
 		// get the user from the database
+		System.out.println("Username is: " + modUser.getUserName());
 		UserAccount curUser = UserAccount.find("byUsername", modUser.getUserName()).first();
 		if (curUser != null)
 		{
 			// make the modifications to the user, first make sure the email is unique
-			if (UserAccount.find("byEmail", modUser.getEmail()).first() != null)
+			if (!modUser.getEmail().equals(curUser.getEmail()) && UserAccount.find("byEmail", modUser.getEmail()).first() != null)
 			{
 				// the email is not unique cannot modify the user
 				renderJSON("{\"result\": " + false +"}");
