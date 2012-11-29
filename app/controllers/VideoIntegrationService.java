@@ -221,7 +221,7 @@ public class VideoIntegrationService extends Controller{
 			VideoEntry createdEntry = AuthenticationService.getYouTubeService().insert(uploadUrl, newEntry);
 			if (createdEntry.getId() != "")
 			{
-				videoId = createdEntry.getId();
+				videoId = createdEntry.getMediaGroup().getVideoId();
 				// add the video to the database
 				Video video = new Video(videoId, new Date(), AuthenticationService.getCurrentUser().getUserName(), title, description, category, tags, 0, 0).save();
 				// return the video id
