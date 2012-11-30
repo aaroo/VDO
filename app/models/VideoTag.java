@@ -27,7 +27,7 @@ public class VideoTag extends Model implements Comparable<VideoTag> {
 	 * 
 	 * @param name
 	 */
-	private VideoTag(String name) {
+	public VideoTag(String name) {
 		this.name = name;
 	}
 	

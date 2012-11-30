@@ -1,6 +1,8 @@
 package controllers;
 
 import models.*;
+
+import java.util.Date;
 import java.util.List;
 import org.joda.time.DateTime;
 import java.util.*;
@@ -69,11 +71,11 @@ public class UserIntegrationService extends Controller {
 			}
 			// delete the user
 			curUser.delete();
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		renderJSON("{\"result\": " + false +"}");
+		renderJSON("{\"result\":" + false +"}");
 	}
 	
 	/**
@@ -83,22 +85,21 @@ public class UserIntegrationService extends Controller {
 	 * 
 	 * @param modUser
 	 */
-	public static void editUser(UserAccount modUser)
+	public static void editUser(String username, String password, String email, long bAdmin)
 	{
 		// get the user from the database
-		System.out.println("Username is: " + modUser.getUserName());
-		UserAccount curUser = UserAccount.find("byUsername", modUser.getUserName()).first();
+		UserAccount curUser = UserAccount.find("byUsername", username).first();
 		if (curUser != null)
 		{
 			// make the modifications to the user, first make sure the email is unique
-			if (!modUser.getEmail().equals(curUser.getEmail()) && UserAccount.find("byEmail", modUser.getEmail()).first() != null)
+			if (!email.equals(curUser.getEmail()) && UserAccount.find("byEmail", email).first() != null)
 			{
 				// the email is not unique cannot modify the user
-				renderJSON("{\"result\": " + false +"}");
+				renderJSON("{\"result\":" + false +"}");
 			}
-			curUser.setEmail(modUser.getEmail());
-			curUser.setPassword(modUser.getPassword());
-			curUser.setAdmin(modUser.isAdmin());
+			curUser.setEmail(email);
+			curUser.setPassword(password);
+			curUser.setAdmin(bAdmin != 0);
 			// check to make sure the current user is not this user
 			if (AuthenticationService.getCurrentUser() != null && AuthenticationService.getCurrentUser().getUserName().equals(curUser.getUserName()))
 			{
@@ -112,13 +113,13 @@ public class UserIntegrationService extends Controller {
 			}
 			catch (Exception e)
 			{
-				renderJSON("{\"result\": " + false +"}");
+				renderJSON("{\"result\":" + false +"}");
 			}
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 
 		// could not find the user or someone has already deleted it so return false
-		renderJSON("{\"result\": " + false +"}");
+		renderJSON("{\"result\":" + false +"}");
 	}
 	
 	/**

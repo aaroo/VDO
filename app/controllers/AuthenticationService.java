@@ -87,14 +87,14 @@ public class AuthenticationService extends Controller {
 			}
 			catch (Exception e)
 			{
-				renderJSON("{\"result\": " + false +"}");
+				renderJSON("{\"result\":" + false +"}");
 			}
 			// return true
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 
 		// could not find the user or someone is already logged in so return false
-		renderJSON("{\"result\": " + false +"}");
+		renderJSON("{\"result\":" + false +"}");
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class AuthenticationService extends Controller {
 		if (UserAccount.find("byEmail", email).first() != null || UserAccount.find("byUsername", username).first() != null || AuthenticationService.getCurrentUser() != null)
 		{
 			// user already exists or someone is already logged in so return false
-			renderJSON("{\"result\": " + false +"}");
+			renderJSON("{\"result\":" + false +"}");
 		}
 		
 		// create the new user and save it in the database
@@ -124,11 +124,11 @@ public class AuthenticationService extends Controller {
 		}
 		catch (Exception e)
 		{
-			renderJSON("{\"result\": " + false +"}");
+			renderJSON("{\"result\":" + false +"}");
 		}
 				
 		// return success
-		renderJSON("{\"result\": " + true +"}");
+		renderJSON("{\"result\":" + true +"}");
 	}
 	
 	/**
@@ -143,11 +143,11 @@ public class AuthenticationService extends Controller {
 		if (AuthenticationService.getCurrentUser() != null)
 		{
 			AuthenticationService.setCurrentUser(null);
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 		else
 		{
-			renderJSON("{\"result\": " + false +"}");
+			renderJSON("{\"result\":" + false +"}");
 		}
 	}
 	
@@ -204,15 +204,15 @@ public class AuthenticationService extends Controller {
 			catch (AuthenticationException e)
 			{
 				// the authentication was invalid
-				renderJSON("{\"result\": " + false +"}");
+				renderJSON("{\"result\":" + false +"}");
 			}
 			// successfully connected to YouTube API
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 		else
 		{
 			// already open
-			renderJSON("{\"result\": " + true +"}");
+			renderJSON("{\"result\":" + true +"}");
 		}
 	}
 	
