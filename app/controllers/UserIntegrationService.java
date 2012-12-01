@@ -31,8 +31,15 @@ public class UserIntegrationService extends Controller {
 	public static void searchUser(String username)
 	{
 		// get the list of users that match a given username
-		List<UserAccount> userList = UserAccount.find("byUsernameLike", username).fetch();
-		renderJSON(userList);
+		try
+		{
+			List<UserAccount> userList = UserAccount.find("byUsernameLike", username).fetch();
+			renderJSON(userList);
+		}
+		catch (Exception e)
+		{
+			renderJSON(new ArrayList<UserAccount>());
+		}
 	}
 	
 	/**
@@ -45,8 +52,15 @@ public class UserIntegrationService extends Controller {
 	public static void getUserInfo(String username)
 	{
 		// get the user information for a given username
-		UserAccount user = UserAccount.find("byUsername", username).first();
-		renderJSON(user);
+		try
+		{
+			UserAccount user = UserAccount.find("byUsername", username).first();
+			renderJSON(user);
+		}
+		catch (Exception e)
+		{
+			renderJSON(new UserAccount("", "", "", new Date(), new Date(), false));
+		}
 	}
 	
 	/**
@@ -58,10 +72,11 @@ public class UserIntegrationService extends Controller {
 	 */
 	public static void deleteUser(String username)
 	{
-		// find the user in the database
-		UserAccount curUser = UserAccount.find("byUsername", username).first();
-		if (curUser != null)
+		try
 		{
+			// find the user in the database
+			UserAccount curUser = UserAccount.find("byUsername", username).first();
+			
 			// user exists so delete it
 			// check to make sure the current user is not this user
 			if (AuthenticationService.getCurrentUser() != null && AuthenticationService.getCurrentUser().getUserName().equals(curUser.getUserName()))
@@ -72,6 +87,11 @@ public class UserIntegrationService extends Controller {
 			// delete the user
 			curUser.delete();
 			renderJSON("{\"result\":" + true +"}");
+		}
+		catch (Exception e)
+		{
+			// could not find the user or someone has already deleted it so return false
+			renderJSON("{\"result\":" + false +"}");
 		}
 
 		// could not find the user or someone has already deleted it so return false
@@ -87,12 +107,22 @@ public class UserIntegrationService extends Controller {
 	 */
 	public static void editUser(String username, String password, String email, long bAdmin)
 	{
-		// get the user from the database
-		UserAccount curUser = UserAccount.find("byUsername", username).first();
-		if (curUser != null)
+		try
 		{
+			// get the user from the database
+			UserAccount curUser = UserAccount.find("byUsername", username).first();
+		
 			// make the modifications to the user, first make sure the email is unique
-			if (!email.equals(curUser.getEmail()) && UserAccount.find("byEmail", email).first() != null)
+			String useremail = null;
+			try
+			{
+				useremail = UserAccount.find("byEmail", email).first();
+			}
+			catch (Exception e)
+			{
+				// do nothing it doesn't exist
+			}
+			if (!email.equals(curUser.getEmail()) && useremail != null)
 			{
 				// the email is not unique cannot modify the user
 				renderJSON("{\"result\":" + false +"}");
@@ -117,7 +147,11 @@ public class UserIntegrationService extends Controller {
 			}
 			renderJSON("{\"result\":" + true +"}");
 		}
-
+		catch (Exception e)
+		{
+			// could not find the user or someone has already deleted it so return false
+			renderJSON("{\"result\":" + false +"}");
+		}
 		// could not find the user or someone has already deleted it so return false
 		renderJSON("{\"result\":" + false +"}");
 	}
@@ -130,9 +164,16 @@ public class UserIntegrationService extends Controller {
 	 */
 	public static void getAllUsers()
 	{
-		// get the list of all users from the database
-		List<UserAccount> userList = UserAccount.findAll();
-		renderJSON(userList);
+		try
+		{		
+			// get the list of all users from the database		
+			List<UserAccount> userList = UserAccount.findAll();		
+			renderJSON(userList);
+		}
+		catch (Exception e)
+		{
+			renderJSON(new ArrayList<UserAccount>());
+		}
 	}
 	
 

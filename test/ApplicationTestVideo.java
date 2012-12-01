@@ -19,7 +19,7 @@ public class ApplicationTestVideo extends FunctionalTest {
 	@Test (timeout=1000000)
 	public void testVideoService() {
 		/* connect to the YouTubeAPI */
-		String videoId = "WTjVVERkb0U";
+		String videoId = "07hu0oAiBCM";
 		JSONObject json;
 		Http.Response response = GET("/authenticationservice/openyoutubeapi");
 		String resp = getContent(response).toString();
@@ -34,7 +34,7 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    resp = getContent(response).toString();
         assertTrue(resp.equals("{\"result\":true}"));
 		/* need to add a video to youtube for a user first */
-        
+        /*
         Map<String, String> addVideoParams = new HashMap<String, String>();
         addVideoParams.put("filename", "./test/Francesca Jane.mp4");
         addVideoParams.put("title", "CS575-Test1");
@@ -53,7 +53,7 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    {
 	    	assertTrue(false);
 	    }
-	    
+	    */
 	    /* get the video feed */
         /*
 	    Map<String, String> getVideoParams = new HashMap<String, String>();
@@ -61,7 +61,6 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    response = POST("/videointegrationservice/getvideos", getVideoParams);
 	    try
 	    {
-	    	System.out.println(getContent(response).toString());
 	    	json = new JSONObject(getContent(response).toString());
 	    	assertTrue(json.getJSONArray("entries").length() > 0);
 	    }
@@ -100,21 +99,21 @@ public class ApplicationTestVideo extends FunctionalTest {
         assertTrue(resp.equals("{\"result\":true}"));
         */
         /* search video */
-        /*
+        
 	    Map<String, String> searchVideoParams = new HashMap<String, String>();
-	    searchVideoParams.put("tagList", "test1");
-	    searchVideoParams.put("owner", "");
+	    searchVideoParams.put("tagList[0]", "cs575");
+	    searchVideoParams.put("owner", "dco15");
 	    response = POST("/videointegrationservice/searchvideos", searchVideoParams);
 	    try
 	    {
 	    	json = new JSONObject(getContent(response).toString());
-	    	assertTrue(json.getJSONObject("feed").getJSONArray("entry").length() > 0);
+	    	assertTrue(json.getJSONArray("entries").length() > 0);
 	    }
 	    catch (Exception e)
 	    {
 	    	assertTrue(false);
 	    }
-	    */
+	    
 	    /* search video */
         /*
 	    searchVideoParams = new HashMap<String, String>();
@@ -139,7 +138,7 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    try
 	    {
 	    	json = new JSONObject(getContent(response).toString());
-	    	assertTrue(json.getJSONArray("author").length() > 0);
+	    	assertTrue(json.getJSONObject("media group").getString("videoId") == videoId);
 	    }
 	    catch (Exception e)
 	    {

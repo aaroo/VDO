@@ -72,9 +72,15 @@ public class AuthenticationService extends Controller {
 	public static void login(String email, String password)
 	{
 		// get the current user based on the username and password
-		UserAccount curUser = UserAccount.find("byEmailAndPassword", email, password).first();
-		if (curUser != null && AuthenticationService.getCurrentUser() == null)
-		{
+		try
+		{		
+			UserAccount curUser = UserAccount.find("byEmailAndPassword", email, password).first();
+			
+			if (AuthenticationService.getCurrentUser() != null)
+			{
+				// somebody is already logged in
+				renderJSON("{\"result\":" + false +"}");
+			}
 			// user exists and there is currently no user logged in
 			// modify the last login time
 			curUser.setLastLogin(new Date());
@@ -91,6 +97,11 @@ public class AuthenticationService extends Controller {
 			}
 			// return true
 			renderJSON("{\"result\":" + true +"}");
+		}
+		catch(Exception e)
+		{
+			// could not find the user or someone is already logged in so return false
+			renderJSON("{\"result\":" + false +"}");
 		}
 
 		// could not find the user or someone is already logged in so return false
@@ -109,10 +120,17 @@ public class AuthenticationService extends Controller {
 	public static void signUp(String username, String password, String email)
 	{
 		// check to see if the username already exists and that a current user is not already set
-		if (UserAccount.find("byEmail", email).first() != null || UserAccount.find("byUsername", username).first() != null || AuthenticationService.getCurrentUser() != null)
+		try
 		{
-			// user already exists or someone is already logged in so return false
-			renderJSON("{\"result\":" + false +"}");
+			if (AuthenticationService.getCurrentUser() != null || UserAccount.find("byEmail", email).first() != null || UserAccount.find("byUsername", username).first() != null)
+			{
+				// user already exists or someone is already logged in so return false
+				renderJSON("{\"result\":" + false +"}");
+			}
+		}
+		catch (Exception e)
+		{
+			/* ignore the exception entry does not exist */
 		}
 		
 		// create the new user and save it in the database

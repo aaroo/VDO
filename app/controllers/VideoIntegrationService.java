@@ -86,16 +86,27 @@ public class VideoIntegrationService extends Controller{
 			{
 				// get the media group for the video feed
 				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
-				// get the video in the database that is associated with the video id
-				Video video = Video.find("byId", mediaGroup.getVideoId()).first(); 
-				// get the video statistics for the video
 				YtStatistics stats = videoEntry.getStatistics();
-				if(stats != null && video != null ) 
+				// get the video in the database that is associated with the video id
+				int numViews = 0;
+				int numLikes = 0;
+				try
+				{
+					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					numViews = video.getViews();
+					numLikes = video.getLikes();
+				}
+				catch (Exception e)
+				{
+					/* could not find the video file */
+				}
+				// get the video statistics for the video
+				if(stats != null) 
 				{
 					// set the number of views for the video
-					stats.setViewCount(video.getViews());
+					stats.setViewCount(numViews);
 					// set the number of likes for the video
-					stats.setFavoriteCount(video.getLikes());	
+					stats.setFavoriteCount(numLikes);	
 				}
 			}
 			
@@ -141,20 +152,20 @@ public class VideoIntegrationService extends Controller{
 				renderJSON("{\"result\":" + false +"}");
 			}
 			
-			// delete it from the database
-			Video delVideo = Video.find("byId", id).first();
-			if (delVideo != null)
+			try 
 			{
-				// found the video in the database
+				// delete it from the database
+				Video delVideo = Video.find("byId", id).first();
+				
+				// found the video in the database, or an exception is thrown and false is returned
 				delVideo.delete();
 			}
-			else
+			catch(Exception e)
 			{
-				// could not find the video in the database
-				renderJSON("{\"result\":" + false +"}");
+				// means video is not in the database so return true as if it was deleted
+				renderJSON("{\"result\":" + true +"}");
 			}
-			
-			// result was successful
+			// return success
 			renderJSON("{\"result\":" + true +"}");
 		}
 		catch (Exception e)
@@ -232,7 +243,7 @@ public class VideoIntegrationService extends Controller{
 			// try uploading the video metadata to Youtube and get the token
 			URL uploadUrl = new URL("http://uploads.gdata.youtube.com/feeds/api/users/default/uploads");
 			VideoEntry createdEntry = AuthenticationService.getYouTubeService().insert(uploadUrl, newEntry);
-			if (createdEntry.getMediaGroup().getVideoId() != "")
+			if (createdEntry.getMediaGroup().getVideoId().length() > 0)
 			{
 				videoId = createdEntry.getMediaGroup().getVideoId();
 				// add the video to the database
@@ -308,24 +319,17 @@ public class VideoIntegrationService extends Controller{
 			}
 			
 			// Update the database with this data just to be accurate
-			Video video = Video.find("byId", id).first();
-			if (video != null)
-			{
-				// set the video title
-				video.setTitle(title);
-				// set the video description
-				video.setDesc(description);
-				// set the video tags
-				video.setTags(tags);
-				// set the category
-				video.setCategory(category);
-				// save the updates
-				video.save();
-			}
-			else
-			{
-				renderJSON("{\"result\":" + false +"}");
-			}
+			Video video = Video.find("byId", id).first();	// an exception will be thrown if the video is not found
+			// set the video title
+			video.setTitle(title);
+			// set the video description
+			video.setDesc(description);
+			// set the video tags
+			video.setTags(tags);
+			// set the category
+			video.setCategory(category);
+			// save the updates
+			video.save();
 			// result was successful
 			renderJSON("{\"result\":" + true +"}");
 		}
@@ -391,16 +395,27 @@ public class VideoIntegrationService extends Controller{
 			{
 				// get the media group for the video feed
 				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
-				// get the video in the database that is associated with the video id
-				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
-				// get the video statistics for the video
 				YtStatistics stats = videoEntry.getStatistics();
-				if(stats != null && video != null ) 
+				// get the video in the database that is associated with the video id
+				int numViews = 0;
+				int numLikes = 0;
+				try
+				{
+					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					numViews = video.getViews();
+					numLikes = video.getLikes();
+				}
+				catch (Exception e)
+				{
+					/* could not find the video file */
+				}
+				// get the video statistics for the video
+				if(stats != null) 
 				{
 					// set the number of views for the video
-					stats.setViewCount(video.getViews());
+					stats.setViewCount(numViews);
 					// set the number of likes for the video
-					stats.setFavoriteCount(video.getLikes());
+					stats.setFavoriteCount(numLikes);	
 				}
 			}
 				
@@ -440,17 +455,27 @@ public class VideoIntegrationService extends Controller{
 			{
 				// get the media group for the video feed
 				YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
-				// get the video in the database that is associated with the video id
-				Video video = Video.find("byId", mediaGroup.getVideoId()).first();
-				// get the video statistics for the video
 				YtStatistics stats = videoEntry.getStatistics();
-				if(stats != null && video != null ) 
+				// get the video in the database that is associated with the video id
+				int numViews = 0;
+				int numLikes = 0;
+				try
+				{
+					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					numViews = video.getViews();
+					numLikes = video.getLikes();
+				}
+				catch (Exception e)
+				{
+					/* could not find the video file */
+				}
+				// get the video statistics for the video
+				if(stats != null) 
 				{
 					// set the number of views for the video
-					stats.setViewCount(video.getViews());
+					stats.setViewCount(numViews);
 					// set the number of likes for the video
-					stats.setFavoriteCount(video.getLikes());
-					renderJSON(new JSONObject(videoEntry).toString());
+					stats.setFavoriteCount(numLikes);	
 				}
 			}
 
@@ -474,22 +499,26 @@ public class VideoIntegrationService extends Controller{
 	{
 		int numLikes = -1;
 		// get the video from the database
-		Video vid = Video.find("byId", id).first();
+		try {
+			Video vid = Video.find("byId", id).first();
 		
-		if (vid != null)
-		{
 			// add one to the number of likes
 			vid.setLikes(vid.getLikes() + 1);
-	
+			
 			// save the update to the database
 			vid.save();
 			
 			// set the number of likes to be returned
 			numLikes = vid.getLikes();
+			
+			// return number of likes
+			renderJSON("{\"result\":" + numLikes +"}");		
 		}
-		
-		// return number of likes
-		renderJSON("{\"result\":" + numLikes +"}");		
+		catch (Exception e)
+		{
+			// return number of likes
+			renderJSON("{\"result\":" + numLikes +"}");		
+		}	
 	}
 	
 	/**
@@ -503,10 +532,10 @@ public class VideoIntegrationService extends Controller{
 	{
 		int numViews = -1;
 		// get the video from the database
-		Video vid = Video.find("byId", id).first();
-		
-		if (vid != null)
+		try
 		{
+			Video vid = Video.find("byId", id).first();
+
 			// add one to the number of likes
 			vid.setViews(vid.getViews() + 1);
 		
@@ -514,11 +543,16 @@ public class VideoIntegrationService extends Controller{
 			vid.save();
 			
 			// set the number of views to be returned
-			numViews = vid.getViews();	
+			numViews = vid.getViews();
+			
+			// return number of views
+			renderJSON("{\"result\":" + numViews +"}");
 		}
-		
-		// return number of views
-		renderJSON("{\"result\":" + numViews +"}");
+		catch (Exception e)
+		{
+			// return number of views
+			renderJSON("{\"result\":" + numViews +"}");
+		}
 	}
 	
 }
