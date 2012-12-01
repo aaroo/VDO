@@ -22,7 +22,6 @@ import com.google.gdata.util.*;
 import java.io.IOException;
 import java.io.File;
 import java.net.URL;
-import org.json.JSONObject;
 import javax.activation.MimetypesFileTypeMap;
 
 
@@ -60,7 +59,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 		try
 		{
@@ -111,12 +110,12 @@ public class VideoIntegrationService extends Controller{
 			}
 			
 			// return the result
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 		catch (Exception e)
 		{
 			// error getting the user's videos
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 	}
 	
@@ -363,7 +362,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 		try
 		{
@@ -420,12 +419,12 @@ public class VideoIntegrationService extends Controller{
 			}
 				
 			// return the result
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 		catch (Exception e)
 		{
 			// error get the user's videos
-			renderJSON(new JSONObject(videoFeed).toString());
+			renderJSON(getVideoFeedJSON(videoFeed));
 		}
 	}
 	
@@ -444,7 +443,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON(new JSONObject(videoEntry).toString());
+			renderJSON(getVideoEntryJSON(videoEntry));
 		}
 		try
 		{
@@ -479,12 +478,12 @@ public class VideoIntegrationService extends Controller{
 				}
 			}
 
-			renderJSON(new JSONObject(videoEntry).toString());
+			renderJSON(getVideoEntryJSON(videoEntry));
 		}
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON(new JSONObject(videoEntry).toString());
+			renderJSON(getVideoEntryJSON(videoEntry));
 		}
 	}
 	
@@ -555,4 +554,115 @@ public class VideoIntegrationService extends Controller{
 		}
 	}
 	
+	private static String getVideoFeedJSON(VideoFeed videoFeed)
+	{
+		String jsonString = "{\"entries\":[";
+		if (videoFeed != null)
+		{
+			for (int i = 0; i < videoFeed.getEntries().size(); i++)
+			{
+				VideoEntry videoEntry = videoFeed.getEntries().get(i);
+				jsonString += VideoIntegrationService.getVideoEntryJSON(videoEntry);
+				if (i < (videoFeed.getEntries().size()-1))
+				{
+					jsonString += ", ";
+				}
+			}
+		}
+		jsonString += "]}";
+		
+		return jsonString;
+	}
+	
+	private static String getVideoEntryJSON(VideoEntry videoEntry)
+	{
+		String jsonString = "{";
+		if (videoEntry != null)
+		{
+			// add in the author
+			jsonString += "\"Author\":\"";
+			for (MediaCategory cat : videoEntry.getMediaGroup().getCategories())
+			{
+				if (cat.getScheme().contains("developertags.cat"))
+				{
+					jsonString += cat.getContent();
+				}
+			}
+			jsonString += "\", ";
+			
+			// add in the videoID
+			jsonString += "\"VideoID\":\"" + videoEntry.getMediaGroup().getVideoId() + "\", ";
+			
+			// add in the video title
+			jsonString += "\"Title\":\"" + videoEntry.getMediaGroup().getTitle().getPlainTextContent() + "\", ";
+			
+			// add in the category
+			jsonString += "\"Category\":\"";
+			for (MediaCategory cat : videoEntry.getMediaGroup().getCategories())
+			{
+				if (cat.getScheme().contains("categories.cat"))
+				{
+					jsonString += cat.getContent();
+				}
+			}
+			jsonString += "\", ";
+			
+			// add in the description
+			jsonString += "\"Description\":\"" + videoEntry.getMediaGroup().getDescription().getPlainTextContent() + "\", ";
+			
+			// add in the keywords
+			jsonString += "\"Keywords\":[";
+			for (int i = 0; i < videoEntry.getMediaGroup().getKeywords().getKeywords().size(); i++)
+			{
+				String key = videoEntry.getMediaGroup().getKeywords().getKeywords().get(i);
+				jsonString += "\"" + key + "\"";
+				if (i < (videoEntry.getMediaGroup().getKeywords().getKeywords().size()-1))
+				{
+					jsonString += ", ";
+				}
+			}
+			jsonString += "], ";
+			
+			// add in the thumbnails
+			jsonString += "\"Thumbnails\":[";
+			for (int i = 0; i < videoEntry.getMediaGroup().getThumbnails().size(); i++)
+			{
+				MediaThumbnail thumb = videoEntry.getMediaGroup().getThumbnails().get(i);
+				// TODO: I need to add in the thumbnails
+				jsonString += "\"" + "\"";
+				if (i < (videoEntry.getMediaGroup().getThumbnails().size()-1))
+				{
+					jsonString += ", ";
+				}
+			}
+			jsonString += "], ";
+			
+			// add in the duration
+			jsonString += "\"Duration\":" + videoEntry.getMediaGroup().getDuration() + ", ";
+			
+			// add in the published date
+			jsonString += "\"Published\":\"" + videoEntry.getPublished().toUiString() + "\", ";
+			
+			// add in view count
+			long views = 0;
+			long likes = 0;
+			YtStatistics stats = videoEntry.getStatistics();
+			if (stats != null)
+			{
+				views = stats.getViewCount();
+				likes = stats.getFavoriteCount();
+			}
+			
+			// add in the view count
+			jsonString += "\"Views\":" + views + ", ";
+			
+			// add in the like count
+			jsonString += "\"Likes\":" + likes;
+			
+			
+		}
+		jsonString += "}";
+		
+		return jsonString;
+	}
 }
