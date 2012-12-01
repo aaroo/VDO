@@ -54,7 +54,7 @@ public class VideoIntegrationService extends Controller{
 	public static void getVideos(String owner)
 	{
 		// get all of the videos and metadata from Youtube
-		String videoFeedUrl = "https://gdata.youtube.com/feeds/api/videos";
+		String videoFeedUrl = "http://gdata.youtube.com/feeds/api/videos";
 		// setup the initial query
 		VideoFeed videoFeed = null;
 		if (AuthenticationService.getYouTubeService() == null)
@@ -65,12 +65,13 @@ public class VideoIntegrationService extends Controller{
 		try
 		{
 			YouTubeQuery query = new YouTubeQuery(new URL(videoFeedUrl));
+			query.setSafeSearch(YouTubeQuery.SafeSearch.NONE);
 			// set to filter just the programs videos
 			query.setAuthor("vdo575");
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
 			// set it to grab just the user's videos if set otherwise ignore it and grab all videos
-			if (!owner.equals("") && !owner.equals(" "))
+			if (owner != null && !owner.equals("") && !owner.equals(" "))
 			{
 				CategoryFilter categoryFilter = new CategoryFilter();
 				categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));
@@ -209,11 +210,12 @@ public class VideoIntegrationService extends Controller{
 		mg.setPrivate(false);
 		// add a developer tag for this user
 		mg.addCategory(new MediaCategory(YouTubeNamespace.DEVELOPER_TAG_SCHEME, AuthenticationService.getCurrentUser().getUserName()));
+		
 		// add the user category
 		mg.addCategory(new MediaCategory(YouTubeNamespace.CATEGORY_SCHEME, category));
 
 		// set the video location
-		newEntry.setLocation("Philadelphia, PA");
+	//	newEntry.setLocation("Philadelphia, PA");
 		
 		// set the media file source
 		MimetypesFileTypeMap mediaTypes = new MimetypesFileTypeMap();
@@ -230,7 +232,7 @@ public class VideoIntegrationService extends Controller{
 			// try uploading the video metadata to Youtube and get the token
 			URL uploadUrl = new URL("http://uploads.gdata.youtube.com/feeds/api/users/default/uploads");
 			VideoEntry createdEntry = AuthenticationService.getYouTubeService().insert(uploadUrl, newEntry);
-			if (createdEntry.getId() != "")
+			if (createdEntry.getMediaGroup().getVideoId() != "")
 			{
 				videoId = createdEntry.getMediaGroup().getVideoId();
 				// add the video to the database
@@ -367,7 +369,7 @@ public class VideoIntegrationService extends Controller{
 			// set to order by published videos
 			query.setOrderBy(YouTubeQuery.OrderBy.PUBLISHED);
 			// add the developer tag to grab just the owner videos
-			if (!owner.equals("") && !owner.equals(" "))
+			if (owner != null && !owner.equals("") && !owner.equals(" "))
 			{
 				CategoryFilter categoryFilter = new CategoryFilter();
 				categoryFilter.addCategory(new Category(YouTubeNamespace.DEVELOPER_TAG_SCHEME, owner));

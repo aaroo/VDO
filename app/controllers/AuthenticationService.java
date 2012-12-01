@@ -189,7 +189,7 @@ public class AuthenticationService extends Controller {
 		// set the paramaters for the request
 		if (AuthenticationService.getYouTubeService() == null)
 		{
-			String clientID = "vdo575";
+			String clientID = "Drexel VDO";
 			String developer_key = "AI39si486NEocHWHv8P-hJgwYvUAaXSbImRn4EtClWtCc2kaGiGsPGt-Rj3qZ8cOJPV-uxcptia2EamACPgk3zHsZNOnvpkypQ";
 			String MasterUserName = "vdo575@gmail.com";
 			String MasterPassword = "vvddoo575";
