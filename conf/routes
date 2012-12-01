@@ -17,6 +17,7 @@ GET		/authenticationservice/login								AuthenticationService.login
 GET		/authenticationservice/signup								AuthenticationService.signUp
 GET		/authenticationservice/signOut								AuthenticationService.signOut
 GET		/authenticationservice/openyoutubeapi						AuthenticationService.openYouTubeAPI
+GET		/authenticationservice/getcurrentuserinfo					AuthenticationService.getCurrentUserInfo
 
 # UserIntegration Service
 GET		/userintegrationservice/searchuser/							UserIntegrationService.searchUser

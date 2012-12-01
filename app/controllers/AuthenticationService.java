@@ -48,6 +48,27 @@ public class AuthenticationService extends Controller {
 	}
 	
 	/**
+	 * getCurrentUserInfo()
+	 * 
+	 * Return the currently signed in user as a json feed
+	 * 
+	 * @return
+	 */
+	public static void getCurrentUserInfo()
+	{
+		// return the current user
+		if (currentUser != null)
+		{
+			renderJSON(currentUser);
+		}
+		else
+		{
+			// user does not exist
+			renderJSON("{}");
+		}
+	}
+	
+	/**
 	 * setCurrentUser(UserAccount curUser)
 	 * 
 	 * Set the Current user of the program, use the @Util identify to avoid redirection
