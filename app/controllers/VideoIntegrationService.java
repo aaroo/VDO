@@ -628,8 +628,7 @@ public class VideoIntegrationService extends Controller{
 			for (int i = 0; i < videoEntry.getMediaGroup().getThumbnails().size(); i++)
 			{
 				MediaThumbnail thumb = videoEntry.getMediaGroup().getThumbnails().get(i);
-				// TODO: I need to add in the thumbnails
-				jsonString += "\"" + "\"";
+				jsonString += "{\"url\":\"" + thumb.getUrl() + "\"}";
 				if (i < (videoEntry.getMediaGroup().getThumbnails().size()-1))
 				{
 					jsonString += ", ";

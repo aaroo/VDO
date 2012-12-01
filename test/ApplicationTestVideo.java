@@ -101,7 +101,7 @@ public class ApplicationTestVideo extends FunctionalTest {
         /* search video */
         
 	    Map<String, String> searchVideoParams = new HashMap<String, String>();
-	    searchVideoParams.put("tagList[0]", "cs575");
+	    searchVideoParams.put("tagList[0]", "teamVDO");
 	    searchVideoParams.put("owner", "dco15");
 	    response = POST("/videointegrationservice/searchvideos", searchVideoParams);
 	    try
