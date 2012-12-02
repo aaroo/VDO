@@ -21,10 +21,10 @@ GET		/authenticationservice/openyoutubeapi					AuthenticationService.openYouTube
 GET		/authenticationservice/getcurrentuserinfo				AuthenticationService.getCurrentUserInfo
 
 # UserIntegration Service
-GET		/userintegrationservice/searchuser/						UserIntegrationService.searchUser
+GET		/userintegrationservice/searchuser						UserIntegrationService.searchUser
 GET		/userintegrationservice/getuserinfo						UserIntegrationService.getUserInfo
 GET		/userintegrationservice/deleteuser						UserIntegrationService.deleteUser
-GET		/userintegrationservice/edituser/						UserIntegrationService.editUser
+GET		/userintegrationservice/edituser						UserIntegrationService.editUser
 GET		/userintegrationservice/getallusers						UserIntegrationService.getAllUsers
 
 # VideoIntegration Service

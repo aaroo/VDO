@@ -5,7 +5,7 @@ var App = Em.Application.create({
 			App.currentUserController.getCurrentUserInfo('videos');
 		} else if(window.location.href.indexOf("/editvideo") > -1) {App.editVideoController.getVideoInfo(window.location.href.substring(window.location.href.lastIndexOf("/") + 1));
 		} else if(window.location.href.indexOf("/edituser") > -1) {
-			App.editUserController.getUserInfo("vdo575");
+			App.editUserController.getUserInfo(window.location.href.substring(window.location.href.lastIndexOf("/") + 1));
 		} else if(window.location.href.indexOf("/users") > -1) {
 		} else if(window.location.href.indexOf("/addvideo") > -1) {
 			App.categoryController.getCategories();
@@ -44,9 +44,10 @@ App.Video = Em.Object.extend({
 App.User = Em.Object.extend({
 	username:	null,
 	email:		null,
-	isAdmin:		null,
+	isAdmin:	null,
 	joinDate:	null,
 	lastLogin:	null,
+	id:			null,
 	editLink: function() {
 	  return '/application/edituser/' + this.get('username');
   }.property('username')
@@ -188,9 +189,58 @@ App.AddVideoView = Ember.View.extend({
 App.EditUserView = Ember.View.extend({
 	username: null,
 	email: null,
-	firstName: null,
-	lastName: null,
-	role: null
+	password: null,
+	isAdmin: null,
+	editUser: function(){		
+  		var url="/userintegrationservice/edituser";
+		var params= {
+			username: this.get('username'),
+			password: this.get('password'),
+			email: this.get('email'),
+			isAdmin: App.roleController.selected
+		}
+		
+		$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.result == true) {
+						alert("User Information Successfully Update!");
+					} else {
+						alert("an error has occured while updating. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("edit user ERROR: " + jqXHR.responseText);
+				}
+		});		
+	},
+	
+	deleteUser: function() {
+	  var url="/userintegrationservice/deleteuser";
+		var params= {
+			username: this.get('username')
+		}
+		
+		$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.result == true) {
+						window.location = "/";
+					} else {
+						alert("an error has occured while deleting. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("login ERROR: " + jqXHR.responseText);
+				}
+		});
+	}	
 });
 
 App.LoginFormView = Ember.View.extend({
@@ -344,14 +394,31 @@ App.editVideoController = Ember.Object.create({
 App.editUserController = Ember.Object.create({
 	user: null,
 	getUserInfo: function(username) {
-		var user = App.User.create ({
-			username: username,
-			firstName: 'Cella',
-			lastName: 'Sum',
-			email: 'cella.sum@gmail.com',
-			role: 'curator'
+		var url = "/userintegrationservice/getuserinfo";
+		var params = {username: username}
+		$.ajax({
+			url:url,
+			type:"GET",
+			dataType:"json",
+			data: params,
+			success:function(data) {
+				if(!$.isEmptyObject(data)) {
+					var user = App.User.create({
+						username:		data.username,
+						email:			data.email,
+						password:		data.password,
+						isAdmin: 		data.isAdmin,
+						joinDate:		data.joinDate,
+						lastLogin:		lastLogin,
+						id:				data.id,
+					});
+					App.editUserController.set('user', user);
+				}
+			},
+			error:function(jqXHR, exception) {
+				alert("openYoutubeAPI ERROR" + jqXHR.responseText);
+			}
 		});
-		App.editUserController.set('user', user);
 	}
 });
 
@@ -684,13 +751,15 @@ App.categoryController = Ember.ArrayController.create({
 });
 
 App.roleController = Ember.ArrayController.create({
+	
+	selected: null,	
 	content: [
-  App.Role.create({
-  		term: 'curator',
+	App.Role.create({
+  		term: 'false',
   		label: 'Curator'
   }),
   App.Role.create({
-  		term: 'admin',
+  		term: 'false',
   		label: 'Administrator'
   })]
 });
