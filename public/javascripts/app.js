@@ -1,8 +1,8 @@
 var player;
 var App = Em.Application.create({
 	ready: function() {	
-		if(window.location.href.indexOf("/myvideos") > -1) {
-			App.videolistController.getVideolist(); 
+		if(window.location.href.indexOf("/videos") > -1) {	
+			App.currentUserController.getCurrentUserInfo('videos');
 		} else if(window.location.href.indexOf("/editvideo") > -1) {
 			App.editVideoController.getVideoInfo(window.location.href.substring(window.location.href.lastIndexOf("/") + 1));
 		} else if(window.location.href.indexOf("/edituser") > -1) {
@@ -22,7 +22,6 @@ var App = Em.Application.create({
 /* Models */
 App.Video = Em.Object.extend({
 	authorName:		null,
-	rating:			null,
 	id: 				null,
 	title:			null,
 	category: 		null,
@@ -31,7 +30,6 @@ App.Video = Em.Object.extend({
 	thumbnail:		null,
 	duration:		null,
 	published:		null,
-	favoriteCount:	null,
 	viewCount:		null,
 	likesCount:		null,
 	authorDate: function() {
@@ -45,9 +43,7 @@ App.Video = Em.Object.extend({
 App.User = Em.Object.extend({
 	username:	null,
 	email:		null,
-	firstName:	null,
-	lastName:	null,
-	role:			null,
+	isAdmin:		null,
 	joinDate:	null,
 	lastLogin:	null,
 	editLink: function() {
@@ -77,9 +73,14 @@ App.EditVideoView = Ember.View.extend({
   title: null,
   description: null,
   category: null,
+  keywords: null,
   url: function() {
 	  return 'http://www.youtube.com/embed/' + this.get('id');
-  }.property('id')
+  }.property('id'),
+  updateVideo: function() {
+  		
+	  console.log(this.get('title'));
+  }
 });
 
 App.EditUserView = Ember.View.extend({
@@ -94,9 +95,68 @@ App.LoginFormView = Ember.View.extend({
 	email:			null,
 	password:		null,
 	handleLogin: function() {
-		if(this.get('email') === "vdo575@gmail.com" && this.get('password') === "vvddoo575") {
-			window.location = "/application/myvideos";
+		
+		var url="/authenticationservice/login";
+		var params = {
+				email: this.get('email'),
+				password: this.get('password')
+		};
+		$.ajax({
+			url:url,
+			type: "GET",
+			data: params,
+			dataType: 'json',
+			success: function(data) {
+				if(data.result == true) {
+					window.location = "/application/videos";
+				} else {
+					alert("your login is not recognized.  please try again or sign up");
+				}
+			},
+			error: function(jqXRH, exception) {
+				alert("login ERROR: " + jqXHR.responseText);
+			}
+		});
+
+	}
+});
+
+App.SignupFormView = Ember.View.extend({
+	username:		null,
+	email:			null,
+	password:		null,
+	confirmPassword: null,
+	handleSignup: function() {
+		
+		if(this.get('password') === this.get('confirmPassword')) {
+			var url="/authenticationservice/signup";
+			var params = {
+					username: this.get('username'),
+					password: this.get('password'),
+					email: this.get('email')
+			};
+			$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.result == true) {
+						window.location = "/application/videos";
+					} else {
+						alert("an error has occured while signing up. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("login ERROR: " + jqXHR.responseText);
+				}
+			});
+			
+		} else {
+			alert("the passwords do not match. please try again.");
 		}
+		
+		
 	}
 });
 
@@ -105,36 +165,68 @@ App.currentVideoController = Ember.Object.create({
 	video: null
 });
 
-App.editVideoController = Ember.Object.create({
-	video: null,
-	getVideoInfo: function(id) {
-		var url="https://gdata.youtube.com/feeds/api/videos/" + id + "?v=2&alt=json";
+App.currentUserController = Ember.Object.create({
+	user: null,
+	getCurrentUserInfo: function(origin) {
+		var url = "/authenticationservice/getcurrentuserinfo";
+		
 		$.ajax({
 			url:url,
 			type:"GET",
 			dataType:"json",
 			success:function(data) {
+				var user = App.User.create({
+					username: data.username,
+					email: data.email,
+					isAdmin: data.isAdmin,
+					joinDate: data.joinDate,
+					lastLogin: data.lastLogin
+				});
 				
-				var item = data.entry;
+				App.currentUserController.set('user', user);
 				
-				var date = new Date(item.published.$t);
-				var prettyDate = date.toDateString();
+				if(origin == "videos") {
+					App.videolistController.getVideolist(); 
+				}
+			},
+			error:function(jqXHR, exception) {
+				alert("handleLogout ERROR" + jqXHR.responseText);
+			}
+		});
+
+	}
+});
+
+App.editVideoController = Ember.Object.create({
+	video: null,
+	getVideoInfo: function(id) {
+		var url="/videointegrationservice/getvideoinfo";
+		var params={
+			id: id
+		}
+		$.ajax({
+			url:url,
+			type:"GET",
+			dataType:"json",
+			data:params,
+			success:function(data) {
 				
 				var video = App.Video.create({
-						author:			item.author[0].name.$t,
-						rating:			item.gd$rating.average,
-						id:				id,
-						title:			item.title.$t,
-						category: 		item.media$group.media$category[0].$t,
-						description:	item.media$group.media$description.$t,
-						keywords:		item.media$group.media$keywords.$t,
-						thumbnail:		item.media$group.media$thumbnail[0].url,
-						duration:		item.media$group.yt$duration.seconds,
-						published:		prettyDate,
-						favoriteCount:	item.yt$statistics.favoriteCount,
-						viewCount:		item.yt$statistics.viewCount
+						author:			data.Author,
+						id:				data.VideoID,
+						title:			data.Title,
+						category: 		data.Category,
+						description:	data.Description,
+						keywords:		data.Keywords.toString(),
+						thumbnail:		data.Thumbnails[0].url,
+						duration:		data.Duration,
+						published:		data.Published,
+						viewCount:		data.Views,
+						likesCount:		data.Likes
 				});
 				App.editVideoController.set('video', video);
+				
+				console.log(Em.inspect(video))
 				App.categoryController.getCategories(); 
 			}
 		});
@@ -155,11 +247,51 @@ App.editUserController = Ember.Object.create({
 	}
 });
 
+App.authenticationController = Ember.Object.create({
+	openYoutubeAPI: function(origin) {
+		var url = "/authenticationservice/openyoutubeapi";
+		
+		$.ajax({
+			url:url,
+			type:"GET",
+			dataType:"json",
+			success:function(data) {
+				if (data.result == true) {
+					if(origin == "playlist") {
+						App.playlistController.getPlaylist();  
+					}
+				}
+			},
+			error:function(jqXHR, exception) {
+				alert("openYoutubeAPI ERROR" + jqXHR.responseText);
+			}
+		});
+	},
+	handleLogout: function() {
+		var url = "/authenticationservice/signOut";
+		
+		$.ajax({
+			url:url,
+			type:"GET",
+			dataType:"json",
+			success:function(data) {
+				if (data.result == true) {
+					window.location = "/application/index";
+				}
+			},
+			error:function(jqXHR, exception) {
+				alert("handleLogout ERROR" + jqXHR.responseText);
+			}
+		});
+	}
+});
+
 App.playlistController = Ember.ArrayController.create({
 	content:[],
 	getPlaylist: function() {
 		var me = this;
-		var url="https://gdata.youtube.com/feeds/api/users/BeachHouseVideoZone/uploads?alt=json";
+		var url = '/videointegrationservice/getvideos';
+		
 		$.ajax({
 			url:url,
 			type:"GET",
@@ -169,28 +301,18 @@ App.playlistController = Ember.ArrayController.create({
 				
 				var idList = new Array();
 				
-				$.each(data.feed.entry, function(i, item) {
-					
-					//var date = new Date(item.media$group.yt$uploaded.$t)
-					var date = new Date(item.published.$t);
-					var prettyDate = date.toDateString();
-					
-					var id = item.id.$t;
-					id= id.substr(id.lastIndexOf("/") + 1);
+				$.each(data.entries, function(i, item) {
 					
 					var video = App.Video.create({
-						author:			item.author[0].name.$t,
-						rating:			item.gd$rating.average,
-						id:				id,
-						title:			item.title.$t,
-						category: 		item.media$group.media$category[0].$t,
-						description:	item.media$group.media$description.$t,
-						keywords:		item.media$group.media$keywords.$t,
-						thumbnail:		item.media$group.media$thumbnail[0].url,
-						duration:		item.media$group.yt$duration.seconds,
-						published:		prettyDate,
-						favoriteCount:	item.yt$statistics.favoriteCount,
-						viewCount:		item.yt$statistics.viewCount
+						author:			item.Author,
+						id:				item.VideoID,
+						title:			item.Title,
+						category: 		item.Category,
+						description:	item.Description,
+						keywords:		item.keywords,
+						thumbnail:		item.Thumbnails[0].url,
+						duration:		item.Duration,
+						published:		item.Published
 					});
 					
 					idList.push(video.id);
@@ -199,7 +321,7 @@ App.playlistController = Ember.ArrayController.create({
 					
 				});
 				App.playlistController.addPlaylist(idList);
-					App.playlistController.adjustVideoListWidth(data.feed.entry.length);
+					App.playlistController.adjustVideoListWidth(data.entries.length);
 					App.playlistController.addPopovers();
 				
 			},
@@ -248,7 +370,12 @@ App.playlistController = Ember.ArrayController.create({
 	onPlayerStateChange: function(event) {
 		if(event.data == 1) {
 			// video is playing
-			App.currentVideoController.set('video', App.playlistController.objectAt(player.getPlaylistIndex()));
+			
+			var videoIndex = player.getPlaylistIndex();
+			if(videoIndex == -1) {
+				videoIndex = 0;
+			}
+			App.currentVideoController.set('video', App.playlistController.objectAt(videoIndex));
 			var widthQuery = window.matchMedia("(min-width: 978px)");
 			if(widthQuery.matches) {
 				$("#video-list").stop().animate({scrollLeft:300*player.getPlaylistIndex()});
@@ -328,43 +455,38 @@ App.playlistController = Ember.ArrayController.create({
 
 App.videolistController = Ember.ArrayController.create({
 	content:[],
-	getVideolist: function(type) {
+	getVideolist: function() {
 		var me = this;
-		var url="https://gdata.youtube.com/feeds/api/users/BeachHouseVideoZone/uploads?alt=json";
+		var url = '/videointegrationservice/getvideos';
+		var params = {};
+		if(App.currentUserController.user.isAdmin == false) {
+			params = { owner: App.currentUserController.user.username };
+		}
 		$.ajax({
 			url:url,
 			type:"GET",
 			dataType:"json",
+			data: params,
 			success:function(data) {
 				me.set('content',[]);
 				
-				var idList = new Array();
 				
-				$.each(data.feed.entry, function(i, item) {
-				
-					var date = new Date(item.published.$t);
-					var prettyDate = date.toDateString();
-					
-					var id = item.id.$t;
-					id= id.substr(id.lastIndexOf("/")+1);
-					
-					
+				$.each(data.entries, function(i, item) {
 					var video = App.Video.create({
-						author:			item.author[0].name.$t,
-						rating:			item.gd$rating.average,
-						id:				id,
-						title:			item.title.$t,
-						category: 		item.media$group.media$category[0].$t,
-						description:	item.media$group.media$description.$t,
-						keywords:		item.media$group.media$keywords.$t,
-						thumbnail:		item.media$group.media$thumbnail[0].url,
-						duration:		item.media$group.yt$duration.seconds,
-						published:		prettyDate,
-						favoriteCount:	item.yt$statistics.favoriteCount,
-						viewCount:		item.yt$statistics.viewCount
+						author:			item.Author,
+						id:				item.VideoID,
+						title:			item.Title,
+						category: 		item.Category,
+						description:	item.Description,
+						keywords:		item.Keywords,
+						thumbnail:		item.Thumbnails[0].url,
+						duration:		item.Duration,
+						published:		item.Published,
+						viewCount:		item.Views,
+						likesCount:		item.Likes
+						
 					});
 					
-					idList.push(video.id);
 					me.pushObject(video);
 				});
 			}
@@ -443,7 +565,6 @@ App.categoryController = Ember.ArrayController.create({
 	}
 });
 
-
 App.roleController = Ember.ArrayController.create({
 	content: [
   App.Role.create({
@@ -456,8 +577,8 @@ App.roleController = Ember.ArrayController.create({
   })]
 });
 
-function onYouTubeIframeAPIReady() {	
-		App.playlistController.getPlaylist();  
+function onYouTubeIframeAPIReady() {
+		App.authenticationController.openYoutubeAPI("playlist");
 }
 
 function getParameterByName(name)

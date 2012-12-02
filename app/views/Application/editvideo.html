@@ -32,10 +32,11 @@
         	 <h1>Edit Video</h1>
         	 
         	   <script type="text/x-handlebars">
-        	  {{#view App.EditVideoView
+        	  {{#view App.EditVideoView tagName="form"
         	  		titleBinding="App.editVideoController.video.title"
         	  		descriptionBinding="App.editVideoController.video.description"
         	  		categoryBinding="App.editVideoController.video.category"
+        	  		keywordsBinding="App.editVideoController.video.keywords"
         	  		idBinding="App.editVideoController.video.id"
         	  }}
         	  <div class="span6">
@@ -48,7 +49,8 @@
 					  <div class="control-group">
 					    <label class="control-label" for="inputTitle">Title</label>
 					    <div class="controls">
-					      <input type="text" id="inputTItle" {{bindAttr value="view.title"}}>
+					      <input type="text" id="inputTitle" {{bindAttr value="view.title"}}>
+					      <!--{{view Ember.TextField id="inputTitle" valueBinding="view.title"}}-->
 					    </div>
 					  </div>
 					  <div class="control-group">
@@ -57,6 +59,14 @@
 					    	<textarea rows="3" id="inputDescription" {{bindAttr value="view.description"}}></textarea>
 					    </div>
 					  </div>
+					  
+					   <div class="control-group">
+					    <label class="control-label" for="inputKeywords">Keywords</label>
+					    <div class="controls">
+					    	<input type="text" id="inputKeywords" {{bindAttr value="view.keywords"}}>
+					    </div>
+					  </div>
+					  
 					  <div class="control-group">
 					  	<label class="control-label" for="inputCategory">Category</label>
 					  	<div class="controls">
@@ -74,7 +84,7 @@
 					  	</div>
 					  </div>
 					  <div class="control-group">
-					  		<button type="submit" class="btn btn-info btn-large">Save Changes</button>
+					  		<button type="submit" class="btn btn-info btn-large" {{action "updateVideo" target="parentView"}}>Save Changes</button>
 					  		<button type="button" class="btn btn-danger btn-large">Delete Video</button>
 					  </div>
 				</form>

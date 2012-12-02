@@ -3,21 +3,21 @@
 # ~~~~
 
 # Home page
-GET     /                                       					Application.index
+GET     /                                       				Application.index
 
 GET		/application/makenewvid										Application.index
 GET		/application/makenewuser									Application.index
 GET		/application/myvideos										Application.myvideos
-GET		/application/editvideo										Application.editvideo
-GET		/application/edituser										Application.edituser
+GET		/application/editvideo/{id}										Application.editvideo
+GET		/application/edituser/{username}										Application.edituser
 GET		/application/users											Application.users
 
 # Authentication Service
 GET		/authenticationservice/login								AuthenticationService.login
 GET		/authenticationservice/signup								AuthenticationService.signUp
-GET		/authenticationservice/signOut								AuthenticationService.signOut
-GET		/authenticationservice/openyoutubeapi						AuthenticationService.openYouTubeAPI
-GET		/authenticationservice/getcurrentuserinfo					AuthenticationService.getCurrentUserInfo
+GET		/authenticationservice/signOut							AuthenticationService.signOut
+GET		/authenticationservice/openyoutubeapi					AuthenticationService.openYouTubeAPI
+GET		/authenticationservice/getcurrentuserinfo				AuthenticationService.getCurrentUserInfo
 
 # UserIntegration Service
 GET		/userintegrationservice/searchuser/							UserIntegrationService.searchUser

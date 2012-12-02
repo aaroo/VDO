@@ -1,5 +1,5 @@
 #{extends 'main.html' /}
-#{set title:'Project VDO - My Videos' /}
+#{set title:'Project VDO - Videos' /}
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -15,12 +15,16 @@
                     </a>
                     <a class="brand" href="/">Project<mark>VDO</mark></a>
                     <div class="nav-collapse collapse">
+                    		
+                       <script type="text/x-handlebars">
                         <ul class="nav">
                             <li class="active"><a href="/application/myvideos">Videos</a></li>
                             <li><a href="/application/users">User List</a></li>
                             <li><a href="/application/edituser/vdo575">Profile</a></li>
-                            <li><a href="#logout">Logout</a></li>
+                            <li><a href="#" {{action "handleLogout" target="App.authenticationController"}}>Logout</a></li>
                         </ul>
+                        
+                       </script>
                     </div><!--/.nav-collapse -->
                 </div>
             </div>
@@ -28,7 +32,7 @@
 
 
         <div class="container">
-        	 <h1>My Videos <button class="btn btn-large btn-info" type="button">Add a New Video</button></h1>
+        	 <h1>Videos <button class="btn btn-large btn-info" type="button">Add a New Video</button></h1>
         	 
         	  <script type="text/x-handlebars">
         
@@ -45,7 +49,10 @@
                   	<h5>{{title}} <a class="btn btn-small btn" {{bindAttr href="editLink"}}><i class="icon-wrench"></i></a></h5>
                   	<p>{{description}}</p>
                   	<p>Added On: {{published}}</p>
-                  	<p>Tagged Under: {{category}}</p>
+                  	<p>Category: {{category}}</p>
+                  	<p>Keywords: {{keywords}}</p>
+                  	<p>Likes: {{likesCount}}</p>
+                  	<p>Views: {{viewCount}}</p>
                   </td>
                 </tr>
                {{/each}}

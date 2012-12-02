@@ -14,7 +14,7 @@ public class Application extends Controller {
         render();
     }
     
-    public static void myvideos() {
+    public static void videos() {
     	render();
     }
     

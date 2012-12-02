@@ -73,20 +73,24 @@
          		<div class="login-form">
          			<script type="text/x-handlebars">
          			{{#view App.LoginFormView tagName="form"}}
-	         			{{view Ember.TextField id="inputEmail" valueBinding="view.email" placeholder="Email"}}
-	         			{{view Ember.TextField type="password" id="inputPassword" valueBinding="view.password" placeholder="Password"}}
+	         			{{view Ember.TextField id="loginEmail" valueBinding="view.email" placeholder="Email"}}
+	         			{{view Ember.TextField type="password" id="loginPassword" valueBinding="view.password" placeholder="Password"}}
 	         			<button type="submit" class="btn btn-info" {{action "handleLogin" target="parentView"}}>Login</button>
 						{{/view}}
 						</script>
          		</div>
          		<div class="login-form">
-	         		<form>
-	         			<input type="text" id="inputUsername" placeholder="Username">
-	         			<input type="text" id="inputEmail" placeholder="Email">
-	         			<input type="password" id="inputPassword" placeholder="Password">
-	         			<input type="password" id="inputConfirmPassword" placeholder="Confirm Password">
-							<button type="submit" class="btn btn-info">Sign up</button>
-						</form>
+         			<script type="text/x-handlebars">
+         			{{#view App.SignupFormView tagName="form"}}
+         				{{view Ember.TextField id="signupUserName" valueBinding="view.username" placeholder="Username"}}
+	         			{{view Ember.TextField id="signupEmail" valueBinding="view.email" placeholder="Email"}}
+	         			{{view Ember.TextField type="password" id="signupPassword" valueBinding="view.password" placeholder="Password"}}
+	         			
+	         			{{view Ember.TextField type="password" id="signupConfirmPassword" valueBinding="view.confirmPassword" placeholder="Confirm Password"}}
+	         			
+	         			<button type="submit" class="btn btn-info" {{action "handleSignup" target="parentView"}}>Sign up</button>
+						{{/view}}
+         			</script>
          		</div>
          	</div>
          	<div class="modal-footer">
