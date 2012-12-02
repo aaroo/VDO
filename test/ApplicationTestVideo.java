@@ -99,7 +99,7 @@ public class ApplicationTestVideo extends FunctionalTest {
         assertTrue(resp.equals("{\"result\":true}"));
         */
         /* search video */
-        
+        /*
 	    Map<String, String> searchVideoParams = new HashMap<String, String>();
 	    searchVideoParams.put("tagList[0]", "teamVDO");
 	    searchVideoParams.put("owner", "dco15");
@@ -113,7 +113,7 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    {
 	    	assertTrue(false);
 	    }
-	    
+	    */
 	    /* search video */
         /*
 	    searchVideoParams = new HashMap<String, String>();
@@ -131,20 +131,21 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    }
 	    */
 	    /* get video info */
-        /*
+        
 	    Map<String, String> getVideoIdParams = new HashMap<String, String>();
 	    getVideoIdParams.put("id", videoId);
 	    response = POST("/videointegrationservice/getvideoinfo", getVideoIdParams);
 	    try
 	    {
 	    	json = new JSONObject(getContent(response).toString());
-	    	assertTrue(json.getJSONObject("media group").getString("videoId") == videoId);
+	    	System.out.println(json.getString("VideoID"));
+	    	assertTrue(json.getString("VideoID").equals(videoId));
 	    }
 	    catch (Exception e)
 	    {
 	    	assertTrue(false);
 	    }
-	    */
+	    
 	    /* like video */
         /*
 	    Map<String, String> likeVideoIdParams = new HashMap<String, String>();

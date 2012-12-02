@@ -496,7 +496,7 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void likeVideo(String id)
 	{
-		int numLikes = -1;
+		int numLikes = 0;
 		// get the video from the database
 		try {
 			Video vid = Video.find("byVidId", id).first();
@@ -529,7 +529,7 @@ public class VideoIntegrationService extends Controller{
 	 */
 	public static void viewVideo(String id)
 	{
-		int numViews = -1;
+		int numViews = 0;
 		// get the video from the database
 		try
 		{
