@@ -16,7 +16,7 @@
                     <a class="brand" href="/">Project<mark>VDO</mark></a>
                     <div class="nav-collapse collapse">
                         <ul class="nav">
-                            <li class="active"><a href="/application/myvideos">Videos</a></li>
+                            <li class="active"><a href="/application/videos">Videos</a></li>
                             <li><a href="/application/users">User List</a></li>
                             <li><a href="/application/edituser/vdo575">Profile</a></li>
                             <li><a href="#logout">Logout</a></li>
@@ -49,43 +49,38 @@
 					  <div class="control-group">
 					    <label class="control-label" for="inputTitle">Title</label>
 					    <div class="controls">
-					      <input type="text" id="inputTitle" {{bindAttr value="view.title"}}>
-					      <!--{{view Ember.TextField id="inputTitle" valueBinding="view.title"}}-->
+					      {{view Ember.TextField id="inputTitle" valueBinding="view.title"}}
 					    </div>
 					  </div>
 					  <div class="control-group">
 					    <label class="control-label" for="inputDescription">Description</label>
 					    <div class="controls">
-					    	<textarea rows="3" id="inputDescription" {{bindAttr value="view.description"}}></textarea>
+					    	{{view Ember.TextArea rows="3" id="inputDescription" valueBinding="view.description"}}
 					    </div>
 					  </div>
 					  
 					   <div class="control-group">
 					    <label class="control-label" for="inputKeywords">Keywords</label>
 					    <div class="controls">
-					    	<input type="text" id="inputKeywords" {{bindAttr value="view.keywords"}}>
+					    	{{view Ember.TextField id="inputKeywords" valueBinding="view.keywords"}}
 					    </div>
 					  </div>
 					  
 					  <div class="control-group">
 					  	<label class="control-label" for="inputCategory">Category</label>
 					  	<div class="controls">
-					  		<select>
-				  			{{#each App.categoryController}}
-				  				{{#if isSelectedCategory}}
-				  					<option {{bindAttr value="term"}} selected>{{label}}</option>
-				  				{{else}}
-				  					<option {{bindAttr value="term"}}>{{label}}</option>
-				  				{{/if}}
-				  				 
-				  			{{/each}}
-	 
-	  					</select>
+					  		{{view Ember.Select id="inputCategory"
+					       contentBinding="App.categoryController.content"
+					       optionValuePath="content.term"
+					       optionLabelPath="content.label"
+					       valueBinding="App.categoryController.selected"
+					      }}
+
 					  	</div>
 					  </div>
 					  <div class="control-group">
 					  		<button type="submit" class="btn btn-info btn-large" {{action "updateVideo" target="parentView"}}>Save Changes</button>
-					  		<button type="button" class="btn btn-danger btn-large">Delete Video</button>
+					  		<button type="button" class="btn btn-danger btn-large" {{action "deleteVideo" target="parentView"}}>Delete Video</button>
 					  </div>
 				</form>
 			</div>

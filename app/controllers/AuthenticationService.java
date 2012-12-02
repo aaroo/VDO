@@ -100,7 +100,7 @@ public class AuthenticationService extends Controller {
 			if (AuthenticationService.getCurrentUser() != null)
 			{
 				// somebody is already logged in
-				renderJSON("{\"result\":" + false +"}");
+				renderJSON("{\"result\":" + false + ",\"status\":\"alreadyLoggedIn\"}");
 			}
 			// user exists and there is currently no user logged in
 			// modify the last login time
@@ -146,7 +146,7 @@ public class AuthenticationService extends Controller {
 			if (AuthenticationService.getCurrentUser() != null || UserAccount.find("byEmail", email).first() != null || UserAccount.find("byUsername", username).first() != null)
 			{
 				// user already exists or someone is already logged in so return false
-				renderJSON("{\"result\":" + false +"}");
+				renderJSON("{\"result\":" + false + ",\"status\":\"alreadyLoggedIn\"}");
 			}
 		}
 		catch (Exception e)

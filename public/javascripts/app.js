@@ -78,8 +78,61 @@ App.EditVideoView = Ember.View.extend({
 	  return 'http://www.youtube.com/embed/' + this.get('id');
   }.property('id'),
   updateVideo: function() {
+  
+  		// format keywords 
+  		var keywords = this.get('keywords');
+  		keywords.replace(/\s/g, "");
+  		keywords.toLowerCase();
+  		var keywordArray = keywords.split(",");
   		
-	  console.log(this.get('title'));
+  		var url="/videointegrationservice/updateVideo";
+		var params= {
+			id: this.get('id'),
+			title: this.get('title'),
+			description: this.get('description'),
+			tagList: keywordArray,
+			category: App.categoryController.selected
+		}
+		
+		$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.result == true) {
+						window.location = "/application/videos";
+					} else {
+						alert("an error has occured while updating. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("login ERROR: " + jqXHR.responseText);
+				}
+		});
+  },
+  deleteVideo: function() {
+	  var url="/videointegrationservice/deleteVideo";
+		var params= {
+			id: this.get('id')
+		}
+		
+		$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.result == true) {
+						window.location = "/application/videos";
+					} else {
+						alert("an error has occured while deleting. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("login ERROR: " + jqXHR.responseText);
+				}
+		});
   }
 });
 
@@ -107,7 +160,7 @@ App.LoginFormView = Ember.View.extend({
 			data: params,
 			dataType: 'json',
 			success: function(data) {
-				if(data.result == true) {
+				if(data.result == true || data.status == "alreadyLoggedIn") {
 					window.location = "/application/videos";
 				} else {
 					alert("your login is not recognized.  please try again or sign up");
@@ -141,7 +194,7 @@ App.SignupFormView = Ember.View.extend({
 				data: params,
 				dataType: 'json',
 				success: function(data) {
-					if(data.result == true) {
+					if(data.result == true || data.status == "alreadyLoggedIn") {
 						window.location = "/application/videos";
 					} else {
 						alert("an error has occured while signing up. please try again.");
@@ -200,7 +253,8 @@ App.currentUserController = Ember.Object.create({
 App.editVideoController = Ember.Object.create({
 	video: null,
 	getVideoInfo: function(id) {
-		var url="/videointegrationservice/getvideoinfo";
+		var timestamp = "timestamp=" + new Date().getTime();
+		var url="/videointegrationservice/getvideoinfo?" + timestamp;
 		var params={
 			id: id
 		}
@@ -210,12 +264,12 @@ App.editVideoController = Ember.Object.create({
 			dataType:"json",
 			data:params,
 			success:function(data) {
-				
-				var video = App.Video.create({
+				if(!$.isEmptyObject(data)) {
+					var video = App.Video.create({
 						author:			data.Author,
 						id:				data.VideoID,
 						title:			data.Title,
-						category: 		data.Category,
+						category: 		data.Category.toString(),
 						description:	data.Description,
 						keywords:		data.Keywords.toString(),
 						thumbnail:		data.Thumbnails[0].url,
@@ -223,11 +277,15 @@ App.editVideoController = Ember.Object.create({
 						published:		data.Published,
 						viewCount:		data.Views,
 						likesCount:		data.Likes
-				});
-				App.editVideoController.set('video', video);
+					});
+					App.editVideoController.set('video', video);
+					App.categoryController.getCategories(video.category); 
+
+				} else {
+					alert("Oops this video appears to no longer exist");
+				}
+								
 				
-				console.log(Em.inspect(video))
-				App.categoryController.getCategories(); 
 			}
 		});
 	}
@@ -457,7 +515,8 @@ App.videolistController = Ember.ArrayController.create({
 	content:[],
 	getVideolist: function() {
 		var me = this;
-		var url = '/videointegrationservice/getvideos';
+		var timestamp = "timestamp=" + new Date().getTime();
+		var url = '/videointegrationservice/getvideos?' + timestamp;
 		var params = {};
 		if(App.currentUserController.user.isAdmin == false) {
 			params = { owner: App.currentUserController.user.username };
@@ -542,7 +601,8 @@ App.userlistController = Ember.ArrayController.create({
 
 App.categoryController = Ember.ArrayController.create({
 	content:[],
-	getCategories: function() {
+	selected: null,
+	getCategories: function(selectedCategory) {
 		var me = this;
 		var url ="http://gdata.youtube.com/schemas/2007/categories.cat";
 		$.ajax({
@@ -559,9 +619,14 @@ App.categoryController = Ember.ArrayController.create({
 					});
 				
 					me.pushObject(category);
+					
 				});
+				
+				App.categoryController.set('selected', selectedCategory);
 			}
 		});
+		
+		
 	}
 });
 

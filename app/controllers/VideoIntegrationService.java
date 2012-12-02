@@ -280,7 +280,7 @@ public class VideoIntegrationService extends Controller{
 		if (AuthenticationService.getYouTubeService() == null)
 		{
 			// youtube api is not open
-			renderJSON("{\"result\":" + false +"}");
+			renderJSON("{\"result\":" + false + ",\"status\":\"youtube api not open\"}");
 		}
 		List<VideoTag> tags = new ArrayList<VideoTag>();
 		for (int iI = 0; iI < tagList.size(); iI++)
@@ -314,7 +314,7 @@ public class VideoIntegrationService extends Controller{
 			else
 			{
 				// could not find the video from YouTube
-				renderJSON("{\"result\":" + false +"}");
+				renderJSON("{\"result\":" + false + ",\"status\":\"video not found\"}");
 			}
 			
 			// Update the database with this data just to be accurate
@@ -335,7 +335,7 @@ public class VideoIntegrationService extends Controller{
 		catch (Exception e)
 		{
 			// error interacting with YouTube API
-			renderJSON("{\"result\":" + false +"}");
+			renderJSON("{\"result\":" + false +",\"status\":" + e + "}");
 		}
 	}
 	
