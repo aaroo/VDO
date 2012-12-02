@@ -91,7 +91,7 @@ public class VideoIntegrationService extends Controller{
 				int numLikes = 0;
 				try
 				{
-					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					Video video = Video.find("byVidId", mediaGroup.getVideoId()).first();
 					numViews = video.getViews();
 					numLikes = video.getLikes();
 				}
@@ -154,7 +154,7 @@ public class VideoIntegrationService extends Controller{
 			try 
 			{
 				// delete it from the database
-				Video delVideo = Video.find("byId", id).first();
+				Video delVideo = Video.find("byVidId", id).first();
 				
 				// found the video in the database, or an exception is thrown and false is returned
 				delVideo.delete();
@@ -318,7 +318,7 @@ public class VideoIntegrationService extends Controller{
 			}
 			
 			// Update the database with this data just to be accurate
-			Video video = Video.find("byId", id).first();	// an exception will be thrown if the video is not found
+			Video video = Video.find("byVidId", id).first();	// an exception will be thrown if the video is not found
 			// set the video title
 			video.setTitle(title);
 			// set the video description
@@ -400,7 +400,7 @@ public class VideoIntegrationService extends Controller{
 				int numLikes = 0;
 				try
 				{
-					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					Video video = Video.find("byVidId", mediaGroup.getVideoId()).first();
 					numViews = video.getViews();
 					numLikes = video.getLikes();
 				}
@@ -460,7 +460,7 @@ public class VideoIntegrationService extends Controller{
 				int numLikes = 0;
 				try
 				{
-					Video video = Video.find("byId", mediaGroup.getVideoId()).first();
+					Video video = Video.find("byVidId", mediaGroup.getVideoId()).first();
 					numViews = video.getViews();
 					numLikes = video.getLikes();
 				}
@@ -499,7 +499,7 @@ public class VideoIntegrationService extends Controller{
 		int numLikes = -1;
 		// get the video from the database
 		try {
-			Video vid = Video.find("byId", id).first();
+			Video vid = Video.find("byVidId", id).first();
 		
 			// add one to the number of likes
 			vid.setLikes(vid.getLikes() + 1);
@@ -533,7 +533,7 @@ public class VideoIntegrationService extends Controller{
 		// get the video from the database
 		try
 		{
-			Video vid = Video.find("byId", id).first();
+			Video vid = Video.find("byVidId", id).first();
 
 			// add one to the number of likes
 			vid.setViews(vid.getViews() + 1);

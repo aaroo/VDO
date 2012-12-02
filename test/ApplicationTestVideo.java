@@ -106,7 +106,6 @@ public class ApplicationTestVideo extends FunctionalTest {
 	    response = POST("/videointegrationservice/searchvideos", searchVideoParams);
 	    try
 	    {
-	    	System.out.println(getContent(response).toString());
 	    	json = new JSONObject(getContent(response).toString());
 	    	assertTrue(json.getJSONArray("entries").length() > 0);
 	    }
