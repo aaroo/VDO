@@ -15,12 +15,19 @@
                     </a>
                     <a class="brand" href="#">Project<mark>VDO</mark></a>
                     <div class="nav-collapse collapse">
+                    		<script type="text/x-handlebars">
                         <ul class="nav">
                             <li class="active"><a href="#">Home</a></li>
                             <li><a href="#about">About</a></li>
                             <li><a href="#contact">Contact</a></li>
-                            <li><a href="#myModal" data-toggle="modal">Login/Signup</a></li>
+                            
+                            {{#if App.currentUserController.user.content}}
+										 <li><a href="/application/videos"> Logged in as {{App.currentUserController.user.username}}</a></li>
+								    {{else}}
+								    		<li><a href="#myModal" data-toggle="modal">Login/Signup</a></li>
+									{{/if}}
                         </ul>
+                         </script>
                     </div><!--/.nav-collapse -->
                 </div>
             </div>

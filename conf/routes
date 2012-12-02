@@ -8,9 +8,10 @@ GET     /                                       				Application.index
 GET		/application/makenewvid										Application.index
 GET		/application/makenewuser									Application.index
 GET		/application/myvideos										Application.myvideos
-GET		/application/editvideo/{id}										Application.editvideo
-GET		/application/edituser/{username}										Application.edituser
+GET		/application/editvideo/{id}								Application.editvideo
+GET		/application/edituser/{username}							Application.edituser
 GET		/application/users											Application.users
+GET		/application/addvideo										Application.addvideo
 
 # Authentication Service
 GET		/authenticationservice/login								AuthenticationService.login
@@ -20,21 +21,21 @@ GET		/authenticationservice/openyoutubeapi					AuthenticationService.openYouTube
 GET		/authenticationservice/getcurrentuserinfo				AuthenticationService.getCurrentUserInfo
 
 # UserIntegration Service
-GET		/userintegrationservice/searchuser/							UserIntegrationService.searchUser
-GET		/userintegrationservice/getuserinfo							UserIntegrationService.getUserInfo
-GET		/userintegrationservice/deleteuser							UserIntegrationService.deleteUser
-GET		/userintegrationservice/edituser/							UserIntegrationService.editUser
-GET		/userintegrationservice/getallusers							UserIntegrationService.getAllUsers
+GET		/userintegrationservice/searchuser/						UserIntegrationService.searchUser
+GET		/userintegrationservice/getuserinfo						UserIntegrationService.getUserInfo
+GET		/userintegrationservice/deleteuser						UserIntegrationService.deleteUser
+GET		/userintegrationservice/edituser/						UserIntegrationService.editUser
+GET		/userintegrationservice/getallusers						UserIntegrationService.getAllUsers
 
 # VideoIntegration Service
-GET		/videointegrationservice/getvideos							VideoIntegrationService.getVideos
-GET		/videointegrationservice/deletevideo						VideoIntegrationService.deleteVideo
-GET		/videointegrationservice/addvideo							VideoIntegrationService.addVideo
-GET		/videointegrationservice/updatevideo						VideoIntegrationService.updateVideo
-GET		/videointegrationservice/searchvideos						VideoIntegrationService.searchVideos
-GET		/videointegrationservice/getvideoinfo						VideoIntegrationService.getVideoInfo
-GET		/videointegrationservice/likevideo							VideoIntegrationService.likeVideo
-GET		/videointegrationservice/viewvideo							VideoIntegrationService.viewVideo
+GET		/videointegrationservice/getvideos						VideoIntegrationService.getVideos
+GET		/videointegrationservice/deletevideo					VideoIntegrationService.deleteVideo
+GET		/videointegrationservice/addvideo						VideoIntegrationService.addVideo
+GET		/videointegrationservice/updatevideo					VideoIntegrationService.updateVideo
+GET		/videointegrationservice/searchvideos					VideoIntegrationService.searchVideos
+GET		/videointegrationservice/getvideoinfo					VideoIntegrationService.getVideoInfo
+GET		/videointegrationservice/likevideo						VideoIntegrationService.likeVideo
+GET		/videointegrationservice/viewvideo						VideoIntegrationService.viewVideo
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

@@ -3,13 +3,14 @@ var App = Em.Application.create({
 	ready: function() {	
 		if(window.location.href.indexOf("/videos") > -1) {	
 			App.currentUserController.getCurrentUserInfo('videos');
-		} else if(window.location.href.indexOf("/editvideo") > -1) {
-			App.editVideoController.getVideoInfo(window.location.href.substring(window.location.href.lastIndexOf("/") + 1));
+		} else if(window.location.href.indexOf("/editvideo") > -1) {App.editVideoController.getVideoInfo(window.location.href.substring(window.location.href.lastIndexOf("/") + 1));
 		} else if(window.location.href.indexOf("/edituser") > -1) {
 			App.editUserController.getUserInfo("vdo575");
 		} else if(window.location.href.indexOf("/users") > -1) {
+		} else if(window.location.href.indexOf("/addvideo") > -1) {
+			App.categoryController.getCategories();
 		} else {
-			
+			App.currentUserController.getCurrentUserInfo();
 		}
 		var tag = document.createElement('script');
 		tag.src = "//www.youtube.com/iframe_api";
@@ -85,7 +86,7 @@ App.EditVideoView = Ember.View.extend({
   		keywords.toLowerCase();
   		var keywordArray = keywords.split(",");
   		
-  		var url="/videointegrationservice/updateVideo";
+  		var url="/videointegrationservice/updatevideo";
 		var params= {
 			id: this.get('id'),
 			title: this.get('title'),
@@ -112,7 +113,7 @@ App.EditVideoView = Ember.View.extend({
 		});
   },
   deleteVideo: function() {
-	  var url="/videointegrationservice/deleteVideo";
+	  var url="/videointegrationservice/deletevideo";
 		var params= {
 			id: this.get('id')
 		}
@@ -134,6 +135,54 @@ App.EditVideoView = Ember.View.extend({
 				}
 		});
   }
+});
+
+App.AddVideoView = Ember.View.extend({
+  title: null,
+  description: null,
+  category: null,
+  keywords: null,
+  file: null,
+  status: null,
+  addVideo: function() {
+  		
+  		$(".status-msg").text("loading... (may take a few minutes)");
+	  // format keywords 
+	  var keywords = this.get('keywords');
+	  keywords.replace(/\s/g, "");
+	  keywords.toLowerCase();
+	  var keywordArray = keywords.split(",");
+	  
+	  var url="/videointegrationservice/addvideo";
+	  var params= {
+	  		filename: this.get('file'),
+			title: this.get('title'),
+			description: this.get('description'),
+			tagList: keywordArray,
+			category: App.categoryController.selected
+		}
+		
+		
+		$.ajax({
+				url:url,
+				type: "GET",
+				data: params,
+				dataType: 'json',
+				success: function(data) {
+					if(data.id != null && data.id != "") {
+						$(".status-msg").html('SUCCESS! Your video has been uploaded.  The id number is: ' + data.id + '.  It can take up to 8 hours to show up in your feed, but you can view its details <a href="/application/editvideo/' + data.id + '">here</a>');
+						//window.location = "/application/videos";
+					} else {
+						console.log(data.id);
+						alert("an error has occured while attempting to add this video. please try again.");
+					}
+				},
+				error: function(jqXRH, exception) {
+					alert("addVideo ERROR: " + jqXHR.responseText);
+				}
+		});
+  }
+  
 });
 
 App.EditUserView = Ember.View.extend({
@@ -249,6 +298,7 @@ App.currentUserController = Ember.Object.create({
 
 	}
 });
+
 
 App.editVideoController = Ember.Object.create({
 	video: null,
@@ -550,6 +600,9 @@ App.videolistController = Ember.ArrayController.create({
 				});
 			}
 		});
+	},
+	goToAddVideo: function() {
+		window.location = "/application/addvideo";
 	}
 });
 

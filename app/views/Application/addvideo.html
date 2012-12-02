@@ -1,5 +1,5 @@
 #{extends 'main.html' /}
-#{set title:'Project VDO - Edit User' /}
+#{set title:'Project VDO-Add Video' /}
 
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
@@ -17,10 +17,11 @@
                     <div class="nav-collapse collapse">
                     <script type="text/x-handlebars">
                         <ul class="nav">
-                            <li><a href="/application/videos">Videos</a></li>
-                            <li class="active"><a href="/application/users">User List</a></li>
+                            <li class="active"><a href="/application/videos">Videos</a></li>
+                            <li><a href="/application/users">User List</a></li>
                             <li><a href="/application/edituser/vdo575">Profile</a></li>
                             <li><a href="#" {{action "handleLogout" target="App.authenticationController"}}>Logout</a></li>
+
                         </ul>
                     </script>
                     </div><!--/.nav-collapse -->
@@ -28,58 +29,60 @@
             </div>
         </div>
 
-
         <div class="container">
+        	 <h1>Add Video</h1>
         	 
         	   <script type="text/x-handlebars">
-        	  {{#view App.EditUserView
-        	  		usernameBinding="App.editUserController.user.username"
-        	  		emailBinding="App.editUserController.user.email"
-        	  		firstNameBinding="App.editUserController.user.firstName"
-        	  		lastNameBinding="App.editUserController.user.lastName"
-        	  		roleBinding="App.editUserController.user.role"
+        	  {{#view App.AddVideoView tagName="form"
+        	  		titleBinding="App.addVideoController.video.title"
+        	  		descriptionBinding="App.addVideoController.video.description"
+        	  		categoryBinding="App.addVideoController.video.category"
+        	  		keywordsBinding="App.addVideoController.video.keywords"
+        	  		fileBinding="App.addVideoController.video.file"
         	  }}
-        	  
-        	  <h1>Edit User: {{view.username}}</h1>
 	        	<div class="span6">
 	        	  <form>
 					  <div class="control-group">
-					    <label class="control-label" for="inputTitle">First Name</label>
+					    <label class="control-label" for="inputTitle">Title</label>
 					    <div class="controls">
-					      <input type="text" id="inputFirstName" {{bindAttr value="view.firstName"}}>
+					      {{view Ember.TextField id="inputTitle" valueBinding="view.title"}}
 					    </div>
 					  </div>
 					  <div class="control-group">
-					    <label class="control-label" for="inputLastName">Last Name</label>
+					    <label class="control-label" for="inputDescription">Description</label>
 					    <div class="controls">
-					    	<input type="text" id="inputLastName" {{bindAttr value="view.lastName"}}>
+					    	{{view Ember.TextArea rows="3" id="inputDescription" valueBinding="view.description"}}
 					    </div>
 					  </div>
-					  <div class="control-group">
-					    <label class="control-label" for="inputEmail">Email</label>
+					  
+					   <div class="control-group">
+					    <label class="control-label" for="inputKeywords">Keywords</label>
 					    <div class="controls">
-					    	<input type="text" id="inputEmail" {{bindAttr value="view.email"}}>
+					    	{{view Ember.TextField id="inputKeywords" valueBinding="view.keywords"}}
 					    </div>
 					  </div>
+					  
 					  <div class="control-group">
-					  	<label class="control-label" for="inputRole">Role</label>
+					  	<label class="control-label" for="inputCategory">Category</label>
 					  	<div class="controls">
-					  		<select>
-				  			{{#each App.roleController}}
-				  				{{#if isSelectedRole}}
-				  					<option {{bindAttr value="term"}} selected>{{label}}</option>
-				  				{{else}}
-				  					<option {{bindAttr value="term"}}>{{label}}</option>
-				  				{{/if}}
-				  				 
-				  			{{/each}}
-	 
-	  					</select>
+					  		{{view Ember.Select id="inputCategory"
+					       contentBinding="App.categoryController.content"
+					       optionValuePath="content.term"
+					       optionLabelPath="content.label"
+					       valueBinding="App.categoryController.selected"
+					      }}
+
 					  	</div>
 					  </div>
 					  <div class="control-group">
-					  		<button type="submit" class="btn btn-info btn-large">Save Changes</button>
-					  		<button type="button" class="btn btn-danger btn-large">Delete User</button>
+					  	<label class="control-label" for="inputFile">File to Upload (absolute path)</label>
+					  	<div class="controls">
+					    	{{view Ember.TextField id="inputFile" valueBinding="view.file"}}
+					    </div>
+					  </div>
+					  <div class="control-group">
+					  		<button type="submit" class="btn btn-info btn-large" {{action "addVideo" target="parentView"}}>Add Video</button>
+					  		<p class="status-msg"></p>
 					  </div>
 				</form>
 			</div>
@@ -87,3 +90,4 @@
 {{/view}}
         	   </script>
         </div>
+        

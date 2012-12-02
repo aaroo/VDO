@@ -28,6 +28,10 @@ public class Application extends Controller {
     
     public static void users() {
        render();
+    }
+    
+    public static void addvideo() {
+       render();
     }	
 	
 }

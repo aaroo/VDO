@@ -15,7 +15,6 @@
                     </a>
                     <a class="brand" href="/">Project<mark>VDO</mark></a>
                     <div class="nav-collapse collapse">
-                    		
                        <script type="text/x-handlebars">
                         <ul class="nav">
                             <li class="active"><a href="/application/videos">Videos</a></li>
@@ -32,12 +31,12 @@
 
 
         <div class="container">
-        	 <h1>Videos <button class="btn btn-large btn-info" type="button">Add a New Video</button></h1>
-        	 
-        	  <script type="text/x-handlebars">
+        	<script type="text/x-handlebars">
+        	 <h1>Videos <button class="btn btn-large btn-info" type="button" {{action "goToAddVideo" target="App.videolistController" }}>Add a New Video</button></h1>
         
 	        	<table class="table">
               <tbody>
+              {{#if App.videolistController.content}}
               	{{#each App.videolistController}}
                 <tr>
                   <td>
@@ -56,6 +55,9 @@
                   </td>
                 </tr>
                {{/each}}
+               {{else}}
+               	<tr><td>You currently have no videos.</td></tr>
+               {{/if}}
               </tbody>
             </table>
         </script>
